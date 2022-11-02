@@ -1,8 +1,7 @@
-// 20221030
+// 20221103
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include "Frame.h"
 #include "Frame_0_menu.h"
 #include "Frame_1_jingziqi.h"
