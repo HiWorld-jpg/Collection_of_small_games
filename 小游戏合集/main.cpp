@@ -1,4 +1,4 @@
-// 20221103
+ï»¿// 20221103
 #define _CRT_SECURE_NO_WARNINGS
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,33 +13,36 @@ int main() {
 	int bkHeight = 800;
 	initgraph(bkWidth, bkHeight);
 
-	// ´´½¨Frame
+	// åˆ›å»ºFrame
 	Frame* currFrame = nullptr;
 	Frame_0_menu frame_0_menu(bkWidth, bkHeight, bkColor, 0);
-	Frame_1_jingziqi frame_1_jingziqi(bkWidth, bkHeight, bkColor, 1);
+	Frame_1_jingziqi frame_1_jingziqi(bkWidth, bkHeight, bkColor, 1,
+		(bkWidth - bkHeight / 2) / 2, bkHeight / 4, bkHeight / 2, bkHeight / 2, bkColor, BLACK);
 
-	// ´´½¨Button
-	Button button_0_jingziqi(100, 100, 130, 50, (char*)"¾®×ÖÆå", bkColor, 0);
-	Button button_1_frame_1_to_frame_0(100, 100, 170, 50, (char*)"»Øµ½²Ëµ¥", bkColor, 1);
+	// åˆ›å»ºButton
+	Button button_0_jingziqi(100, 100, 130, 50, (char*)"äº•å­—æ£‹", bkColor, 0);
+	Button button_1_frame_1_to_frame_0(10, 10, 170, 50, (char*)"å›žåˆ°èœå•", bkColor, 1);
+	Button button_1_frame_1_playAgain(190, 10, 170, 50, (char*)"é‡çŽ©", bkColor, 2);
 
-	// ×¢²áButton, Ë³ÐòÒªÑÏ¸ñ°´ÕÕButton indexÌí¼Ó
+	// æ³¨å†ŒButton, é¡ºåºè¦ä¸¥æ ¼æŒ‰ç…§Button indexæ·»åŠ 
 	Button* allButtons[100];
 	allButtons[0] = &button_0_jingziqi;
 	allButtons[1] = &button_1_frame_1_to_frame_0;
+	allButtons[2] = &button_1_frame_1_playAgain;
 
-	// ½«Button¼ÓÈëËùÊôµÄFrame
+	// å°†ButtonåŠ å…¥æ‰€å±žçš„Frame
 	frame_0_menu.addButton(&button_0_jingziqi);
 
 	frame_1_jingziqi.addButton(&button_1_frame_1_to_frame_0);
+	frame_1_jingziqi.addButton(&button_1_frame_1_playAgain);
 
-	// ³õÊ¼»¯µÚÒ»¸ö´°¿Ú
+	// åˆå§‹åŒ–ç¬¬ä¸€ä¸ªçª—å£
 	currFrame = &frame_0_menu;
 	currFrame->init();
 
 	ExMessage msg;
 	bool mouseClickFlag = false;
 	bool keyBoardPressFlag = false;
-	Button* currClickedButton = nullptr;
 
 	while (true) {
 		peekmessage(&msg);
@@ -48,26 +51,17 @@ int main() {
 		}
 		if (msg.lbutton == true && mouseClickFlag == false) {
 			mouseClickFlag = true;
-			int currClickedButtonIndex = currFrame->retClickedButton(msg.x, msg.y);
-			if (currClickedButtonIndex != -1) {
-				currClickedButton = allButtons[currClickedButtonIndex];
-				currClickedButton->drawButtonDown();
-			}
+			currFrame->processMouseClickDown(msg.x, msg.y);
 		}
 		if (msg.lbutton == false && mouseClickFlag == true) {
 			mouseClickFlag = false;
-			if (currClickedButton != nullptr) {
-				currClickedButton->drawButtonUp();
-				int currClickedButtonIndex = currClickedButton->getGlobalIndex();
-				// ´¦ÀíButtonÊÂ¼þ
-				if (currClickedButtonIndex == 0) {
-					currFrame = &frame_1_jingziqi;
-					currFrame->init();
-				} else if (currClickedButtonIndex == 1) {
-					currFrame = &frame_0_menu;
-					currFrame->init();
-				}
-				currClickedButton = nullptr;
+			int currClickedButtonIndex = currFrame->processMouseClickUp(msg.x, msg.y);
+			if (currClickedButtonIndex == 0) {
+				currFrame = &frame_1_jingziqi;
+				currFrame->init();
+			} else if (currClickedButtonIndex == 1) {
+				currFrame = &frame_0_menu;
+				currFrame->init();
 			}
 		}
 
@@ -85,6 +79,6 @@ int main() {
 	}
 
 	closegraph();
-	
+
 	return 0;
 }

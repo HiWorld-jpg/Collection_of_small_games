@@ -43,7 +43,7 @@ public:
 		return true;
 	}
 
-	virtual void init() const {
+	virtual void init() {
 		closegraph();
 		initgraph(mFrameWidth, mFrameHeight);
 		setbkcolor(mFrameBkColor);
@@ -52,4 +52,31 @@ public:
 			mButtonList[i]->draw();
 		}
 	}
+
+	virtual int processMouseClickDown(int mouseX, int mouseY) {
+		int clickedMouseIndex = -1;
+		for (int i = 0; i < mButtonNum; i++) {
+			if (mButtonList[i]->checkMouseIn(mouseX, mouseY) == true) {
+				mButtonList[i]->drawButtonDown();
+				clickedMouseIndex = mButtonList[i]->getGlobalIndex();
+				break;
+			}
+		}
+		return clickedMouseIndex;
+	}
+
+	virtual int processMouseClickUp(int mouseX, int mouseY) {
+		int clickedMouseIndex = -1;
+		for (int i = 0; i < mButtonNum; i++) {
+			if (mButtonList[i]->checkMouseIn(mouseX, mouseY) == true) {
+				mButtonList[i]->drawButtonUp();
+				clickedMouseIndex = mButtonList[i]->getGlobalIndex();
+				break;
+			}
+		}
+		processEvent(clickedMouseIndex, mouseX, mouseY);
+		return clickedMouseIndex;
+	}
+
+	virtual void processEvent(int eventIndex, int mouseX, int mouseY) {}
 };

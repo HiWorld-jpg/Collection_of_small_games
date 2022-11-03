@@ -5,7 +5,7 @@ class Frame_0_menu : public Frame {
 public:
 	Frame_0_menu(int frameWidth, int frameHeight, COLORREF frameBkColor, int globalIndex) : 
 		Frame(frameWidth, frameHeight, frameBkColor, globalIndex) { }
-	virtual void init() const override {
+	virtual void init() override {
 		setbkcolor(mFrameBkColor);
 		cleardevice();
 		for (int i = 0; i < mButtonNum; i++) {
