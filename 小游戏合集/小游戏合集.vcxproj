@@ -23,6 +23,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Button.h" />
+    <ClInclude Include="FileDialog.h" />
     <ClInclude Include="Frame.h" />
     <ClInclude Include="Frame_0_menu.h" />
     <ClInclude Include="Frame_1_jingziqi.h" />

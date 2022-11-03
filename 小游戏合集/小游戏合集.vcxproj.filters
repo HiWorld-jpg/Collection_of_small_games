@@ -32,5 +32,8 @@
     <ClInclude Include="Frame_1_jingziqi.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="FileDialog.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
