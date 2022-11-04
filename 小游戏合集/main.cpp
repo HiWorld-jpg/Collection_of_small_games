@@ -5,6 +5,7 @@
 #include "Frame.h"
 #include "Frame_0_menu.h"
 #include "Frame_1_jingziqi.h"
+#include "TextLabel.h"
 
 int main() {
 
@@ -30,11 +31,31 @@ int main() {
 	allButtons[1] = &button_1_frame_1_to_frame_0;
 	allButtons[2] = &button_1_frame_1_playAgain;
 
+	int frame1TextX = (bkWidth - bkHeight / 2) / 2;
+	int frame1TextY = bkHeight / 4 * 3;
+	int frame1TextWidth = bkHeight / 2;
+	int frame1TextHeight = bkHeight / 4 / 3;
+	TextLabel text_0_frame_1(frame1TextX, frame1TextY, frame1TextWidth, frame1TextHeight, bkColor, GREEN, (char*)"现在轮到玩家1落子", true, 0);
+	TextLabel text_1_frame_1(frame1TextX, frame1TextY, frame1TextWidth, frame1TextHeight, bkColor, RED,   (char*)"现在轮到玩家2落子", true, 1);
+	TextLabel text_2_frame_1(frame1TextX, frame1TextY, frame1TextWidth, frame1TextHeight, bkColor, BLUE,  (char*)"游戏结束，玩家1赢了", true, 2);
+	TextLabel text_3_frame_1(frame1TextX, frame1TextY, frame1TextWidth, frame1TextHeight, bkColor, BLUE,  (char*)"游戏结束，平局", true, 3);
+	TextLabel text_4_frame_1(frame1TextX, frame1TextY, frame1TextWidth, frame1TextHeight, bkColor, BLUE,  (char*)"游戏结束，玩家2赢了", true, 4);
+	TextLabel text_5_frame_1(frame1TextX, frame1TextY + frame1TextHeight, frame1TextWidth, frame1TextHeight * 0.8, bkColor, BLACK, (char*)"玩家1赢 : 平局 : 玩家2赢", true, 5);
+	TextLabel text_6_frame_1(frame1TextX, frame1TextY + frame1TextHeight * 1.6, frame1TextWidth, frame1TextHeight * 1.6, bkColor, BLACK, (char*)"0:0:0", true, 6);
+	TextLabel text_7_frame_1(frame1TextX, bkHeight / 4 - frame1TextHeight * 2, frame1TextWidth, frame1TextHeight * 2, bkColor, BLACK, (char*)"井字棋", true, 7);
+
 	// 将Button加入所属的Frame
 	frame_0_menu.addButton(&button_0_jingziqi);
-
 	frame_1_jingziqi.addButton(&button_1_frame_1_to_frame_0);
 	frame_1_jingziqi.addButton(&button_1_frame_1_playAgain);
+	frame_1_jingziqi.addText(&text_0_frame_1);
+	frame_1_jingziqi.addText(&text_1_frame_1);
+	frame_1_jingziqi.addText(&text_2_frame_1);
+	frame_1_jingziqi.addText(&text_3_frame_1);
+	frame_1_jingziqi.addText(&text_4_frame_1);
+	frame_1_jingziqi.addText(&text_5_frame_1);
+	frame_1_jingziqi.addText(&text_6_frame_1);
+	frame_1_jingziqi.addText(&text_7_frame_1);
 
 	// 初始化第一个窗口
 	currFrame = &frame_0_menu;
