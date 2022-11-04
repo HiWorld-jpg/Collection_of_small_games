@@ -11,5 +11,8 @@ public:
 		for (int i = 0; i < mButtonNum; i++) {
 			mButtonList[i]->draw();
 		}
+		for (int i = 0; i < mTextNum; i++) {
+			mTextList[i]->draw();
+		}
 	}
 };

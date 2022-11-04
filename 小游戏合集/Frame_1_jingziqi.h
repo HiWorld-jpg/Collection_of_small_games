@@ -11,9 +11,10 @@ private:
 	COLORREF mBoardOutlineColor;
 	char mHookPicPath[100] = { 0 };
 	char mForkPicPath[100] = { 0 };
-	int mBoardData[3][3]; // 0表示格子还没有玩家落子，1表示玩家1已在这个格子落子，-1表示玩家2，-2表示已有玩家赢了，重玩之前格子不允许再下
+	int mBoardData[3][3];  // 0表示格子还没有玩家落子，1表示玩家1已在这个格子落子，-1表示玩家2，-2表示已有玩家赢了，重玩之前格子不允许再下
 	int mCurrPlayer = 1;   // 1表示当前是玩家1落子，-1表示玩家2
-	int mScore[3]; // 分别表示玩家1赢，平局，玩家2赢
+	int mScore[3];         // 分别表示玩家1赢，平局，玩家2赢
+
 public:
 	Frame_1_jingziqi(int frameWidth, int frameHeight, COLORREF frameBkColor, int globalIndex, 
 		int boardX, int boardY, int boardWidth, int boardHeight, COLORREF boardBkColor, COLORREF boardOutlineColor) :
@@ -33,6 +34,9 @@ public:
 		cleardevice();
 		for (int i = 0; i < mButtonNum; i++) {
 			mButtonList[i]->draw();
+		}
+		for (int i = 0; i < mTextNum; i++) {
+			mTextList[i]->draw();
 		}
 		
 		initBoard();
@@ -55,12 +59,8 @@ public:
 		setfillcolor(mBoardBkColor);
 		solidrectangle(mBoardX, mBoardY, mBoardX + mBoardWidth, mBoardY + mBoardHeight);
 		drawBoardLine();
-		clearHintText();
-		char str[30] = { "现在轮到玩家1落子" };
-		settextstyle(mBoardWidth / 15 * 2, mBoardWidth / 15, _T("Fixedsys"));
-		settextcolor(GREEN);
-		outtextxy(mBoardX, mBoardY + 1.05 * mBoardHeight, str);
-		drawScore();
+		mTextList[0]->draw();
+		// drawScore();
 	}
 
 	void initScore() {
@@ -101,12 +101,6 @@ public:
 		}
 	}
 
-	void clearHintText() {
-		setfillcolor(mBoardBkColor);
-		solidrectangle(mBoardX, mBoardY + 1.05 * mBoardHeight,
-			mBoardX + mBoardWidth, mBoardY + 1.05 * mBoardHeight + mBoardWidth / 15 * 2);
-	}
-
 	void processBoardClick(int mouseX, int mouseY) {
 		if (mouseX <= mBoardX || mouseX >= mBoardX + mBoardWidth) {
 			return;
@@ -121,32 +115,19 @@ public:
 		int yIndex = (mouseY - mBoardY) / blockHeight;
 
 		if (mBoardData[xIndex][yIndex] == 0) {
-			char str1[30] = { "现在轮到玩家1落子" };
-			char str2[30] = { "现在轮到玩家2落子" };
-			char str3[30] = { "游戏结束，玩家1赢了" };
-			char str4[30] = { "游戏结束，平局" };
-			char str5[30] = { "游戏结束，玩家2赢了" };
-
 			mBoardData[xIndex][yIndex] = mCurrPlayer;
 			BeginBatchDraw();
 			if (mCurrPlayer == 1) {
 				drawHookDefault(xIndex, yIndex);
 				drawBoardLine();
 				mCurrPlayer *= -1;
-				clearHintText();
-				setbkmode(TRANSPARENT);
-				settextstyle(mBoardWidth / 15 * 2, mBoardWidth / 15, _T("Fixedsys"));
-				settextcolor(RED);
-				outtextxy(mBoardX, mBoardY + 1.05 * mBoardHeight, str1);
+				mTextList[1]->draw();
+				
 			} else if (mCurrPlayer == -1) {
 				drawForkDefault(xIndex, yIndex);
 				drawBoardLine();
 				mCurrPlayer *= -1;
-				clearHintText();
-				setbkmode(TRANSPARENT);
-				settextstyle(mBoardWidth / 15 * 2, mBoardWidth / 15, _T("Fixedsys"));
-				settextcolor(GREEN);
-				outtextxy(mBoardX, mBoardY + 1.05 * mBoardHeight, str2);
+				mTextList[0]->draw();
 			}
 			
 			int result = checkGameResult();
@@ -154,29 +135,17 @@ public:
 				mScore[0]++;
 				drawScore();
 				setBoardDataLocked();
-				clearHintText();
-				setbkmode(TRANSPARENT);
-				settextstyle(mBoardWidth / 15 * 2, mBoardWidth / 15, _T("Fixedsys"));
-				settextcolor(GREEN);
-				outtextxy(mBoardX, mBoardY + 1.05 * mBoardHeight, str3);
+				mTextList[2]->draw();
 			} else if (result == -1) {
 				mScore[2]++;
 				drawScore();
 				setBoardDataLocked();
-				clearHintText();
-				setbkmode(TRANSPARENT);
-				settextstyle(mBoardWidth / 15 * 2, mBoardWidth / 15, _T("Fixedsys"));
-				settextcolor(RED);
-				outtextxy(mBoardX, mBoardY + 1.05 * mBoardHeight, str5);
+				mTextList[4]->draw();
 			} else if (result == 2) {
 				mScore[1]++;
 				drawScore();
 				setBoardDataLocked();
-				clearHintText();
-				setbkmode(TRANSPARENT);
-				settextstyle(mBoardWidth / 15 * 2, mBoardWidth / 15, _T("Fixedsys"));
-				settextcolor(BLUE);
-				outtextxy(mBoardX, mBoardY + 1.05 * mBoardHeight, str4);
+				mTextList[3]->draw();
 			}
 
 			FlushBatchDraw();
@@ -299,13 +268,10 @@ public:
 	}
 
 	void drawScore() {
-		char str1[30] = { "玩家1赢 : 平局 : 玩家2赢" };
-		setbkmode(TRANSPARENT);
-		settextstyle(mBoardWidth / 15 * 2, mBoardWidth / 15, _T("Fixedsys"));
-		settextcolor(BLACK);
-		outtextxy(mBoardX, mBoardY + 1.05 * mBoardHeight + mBoardWidth / 15, str1);
+		mTextList[5]->draw();
 		char scoreString[30];
-		snprintf(scoreString, 29, "  %d  :  %d  :  %d", mScore[0], mScore[1], mScore[2]);
-		outtextxy(mBoardX, mBoardY + 1.05 * mBoardHeight + mBoardWidth / 15 * 2, scoreString);
+		snprintf(scoreString, 29, "%d:%d:%d", mScore[0], mScore[1], mScore[2]);
+		mTextList[6]->setText(scoreString);
+		mTextList[6]->draw();
 	}
 };
