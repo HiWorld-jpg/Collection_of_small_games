@@ -23,13 +23,19 @@ int main() {
 	// 创建Button
 	Button button_0_jingziqi(100, 100, 130, 50, (char*)"井字棋", bkColor, 0);
 	Button button_1_frame_1_to_frame_0(10, 10, 170, 50, (char*)"回到菜单", bkColor, 1);
-	Button button_1_frame_1_playAgain(190, 10, 170, 50, (char*)"重玩", bkColor, 2);
+	Button button_2_frame_1_playAgain(190, 10, 170, 50, (char*)"重玩", bkColor, 2);
+	Button button_3_frame_1_loadPlayer1Pic(370, 10, 190, 50, (char*)"玩家1图片", bkColor, 3);
+	Button button_4_frame_1_loadPlayer2Pic(570, 10, 190, 50, (char*)"玩家2图片", bkColor, 4);
+	Button button_5_frame_1_ResetDefaultPic(770, 10, 170, 50, (char*)"重置图片", bkColor, 5);
 
 	// 注册Button, 顺序要严格按照Button index添加
 	Button* allButtons[100];
 	allButtons[0] = &button_0_jingziqi;
 	allButtons[1] = &button_1_frame_1_to_frame_0;
-	allButtons[2] = &button_1_frame_1_playAgain;
+	allButtons[2] = &button_2_frame_1_playAgain;
+	allButtons[3] = &button_3_frame_1_loadPlayer1Pic;
+	allButtons[4] = &button_4_frame_1_loadPlayer2Pic;
+	allButtons[5] = &button_5_frame_1_ResetDefaultPic;
 
 	int frame1TextX = (bkWidth - bkHeight / 2) / 2;
 	int frame1TextY = bkHeight / 4 * 3;
@@ -47,7 +53,11 @@ int main() {
 	// 将Button加入所属的Frame
 	frame_0_menu.addButton(&button_0_jingziqi);
 	frame_1_jingziqi.addButton(&button_1_frame_1_to_frame_0);
-	frame_1_jingziqi.addButton(&button_1_frame_1_playAgain);
+	frame_1_jingziqi.addButton(&button_2_frame_1_playAgain);
+	frame_1_jingziqi.addButton(&button_3_frame_1_loadPlayer1Pic);
+	frame_1_jingziqi.addButton(&button_4_frame_1_loadPlayer2Pic);
+	frame_1_jingziqi.addButton(&button_5_frame_1_ResetDefaultPic);
+
 	frame_1_jingziqi.addText(&text_0_frame_1);
 	frame_1_jingziqi.addText(&text_1_frame_1);
 	frame_1_jingziqi.addText(&text_2_frame_1);

@@ -1,5 +1,6 @@
 ﻿#pragma once
 #include "Frame.h"
+#include "FileDialog.h"
 
 class Frame_1_jingziqi : public Frame {
 private:
@@ -9,8 +10,8 @@ private:
 	int mBoardHeight;
 	COLORREF mBoardBkColor;
 	COLORREF mBoardOutlineColor;
-	char mHookPicPath[100] = { 0 };
-	char mForkPicPath[100] = { 0 };
+	char mHookPicPath[1000] = { 0 };
+	char mForkPicPath[1000] = { 0 };
 	int mBoardData[3][3];  // 0表示格子还没有玩家落子，1表示玩家1已在这个格子落子，-1表示玩家2，-2表示已有玩家赢了，重玩之前格子不允许再下
 	int mCurrPlayer = 1;   // 1表示当前是玩家1落子，-1表示玩家2
 	int mScore[3];         // 分别表示玩家1赢，平局，玩家2赢
@@ -88,6 +89,13 @@ public:
 			processBoardClick(mouseX, mouseY);
 		} else if (eventIndex == 2) {
 			initBoard();
+		} else if (eventIndex == 3) {
+			MyDialog::selectFileDialog(mHookPicPath);
+		} else if (eventIndex == 4) {
+			MyDialog::selectFileDialog(mForkPicPath);
+		} else if (eventIndex == 5) {
+			mHookPicPath[0] = '\0';
+			mForkPicPath[0] = '\0';
 		}
 	}
 
@@ -118,13 +126,13 @@ public:
 			mBoardData[xIndex][yIndex] = mCurrPlayer;
 			BeginBatchDraw();
 			if (mCurrPlayer == 1) {
-				drawHookDefault(xIndex, yIndex);
+				drawHook(xIndex, yIndex);
 				drawBoardLine();
 				mCurrPlayer *= -1;
 				mTextList[1]->draw();
 				
 			} else if (mCurrPlayer == -1) {
-				drawForkDefault(xIndex, yIndex);
+				drawFork(xIndex, yIndex);
 				drawBoardLine();
 				mCurrPlayer *= -1;
 				mTextList[0]->draw();
@@ -153,6 +161,20 @@ public:
 		}
 	}
 
+	void drawHook(int xIndex, int yIndex) {
+		if (strlen(mHookPicPath) == 0) {
+			drawHookDefault(xIndex, yIndex);
+		} else {
+			int blockHeight = mBoardHeight / 3;
+			int blockWidth = mBoardWidth / 3;
+			int currBlockX = mBoardX + xIndex * blockWidth;
+			int currBlockY = mBoardY + yIndex * blockHeight;
+			IMAGE hook;
+			loadimage(&hook, mHookPicPath, blockWidth, blockHeight);
+			putimage(currBlockX, currBlockY, &hook);
+		}
+	}
+
 	void drawHookDefault(int xIndex, int yIndex) {
 		int blockHeight = mBoardHeight / 3;
 		int blockWidth = mBoardWidth / 3;
@@ -177,6 +199,20 @@ public:
 			{currBlockX + 2 * smallBlockWidth, currBlockY + 3 * smallBlockHeight},
 		};
 		solidpolygon(pts, 6);
+	}
+
+	void drawFork(int xIndex, int yIndex) {
+		if (strlen(mForkPicPath) == 0) {
+			drawForkDefault(xIndex, yIndex);
+		} else {
+			int blockHeight = mBoardHeight / 3;
+			int blockWidth = mBoardWidth / 3;
+			int currBlockX = mBoardX + xIndex * blockWidth;
+			int currBlockY = mBoardY + yIndex * blockHeight;
+			IMAGE fork;
+			loadimage(&fork, mForkPicPath, blockWidth, blockHeight);
+			putimage(currBlockX, currBlockY, &fork);
+		}
 	}
 
 	void drawForkDefault(int xIndex, int yIndex) {
