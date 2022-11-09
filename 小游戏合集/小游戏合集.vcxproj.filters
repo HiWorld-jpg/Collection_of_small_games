@@ -38,5 +38,8 @@
     <ClInclude Include="TextLabel.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Frame_2_xiaoxiaole.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
