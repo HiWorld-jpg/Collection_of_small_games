@@ -30,7 +30,6 @@ public:
 	}
 	
 	virtual void init() override {
-		BeginBatchDraw();
 		setbkcolor(mFrameBkColor);
 		cleardevice();
 		for (int i = 0; i < mButtonNum; i++) {
@@ -41,9 +40,6 @@ public:
 		}
 		
 		initBoard();
-
-		FlushBatchDraw();
-		EndBatchDraw();
 	}
 
 	void initBoardData() {
@@ -124,7 +120,6 @@ public:
 
 		if (mBoardData[xIndex][yIndex] == 0) {
 			mBoardData[xIndex][yIndex] = mCurrPlayer;
-			BeginBatchDraw();
 			if (mCurrPlayer == 1) {
 				drawHook(xIndex, yIndex);
 				drawBoardLine();
@@ -155,9 +150,6 @@ public:
 				setBoardDataLocked();
 				mTextList[3]->draw();
 			}
-
-			FlushBatchDraw();
-			EndBatchDraw();
 		}
 	}
 
