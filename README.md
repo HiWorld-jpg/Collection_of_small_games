@@ -4,8 +4,8 @@
 - 双人井字棋
 - 消消乐
 
-!(./小游戏合集/picture/井字棋运行图片.png)
-!(./小游戏合集/picture/消消乐运行图片.png)
+![local picture](./小游戏合集/picture/井字棋运行图片.png)
+![local picture](./小游戏合集/picture/消消乐运行图片.png)
 
 ##编译环境
 1. 把代码下载到本地，然后使用visual studio 2019（或者更高版本），打开项目目录下的 “小游戏合集.sln 这个文件”
