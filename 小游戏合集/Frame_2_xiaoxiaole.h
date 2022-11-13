@@ -33,7 +33,6 @@ public:
 	}
 
 	virtual void init() override {
-		BeginBatchDraw();
 		setbkcolor(mFrameBkColor);
 		cleardevice();
 		for (int i = 0; i < mButtonNum; i++) {
@@ -44,17 +43,14 @@ public:
 		}
 
 		initBoard();
-
-		FlushBatchDraw();
-		EndBatchDraw();
 	}
 
 	void initBoardData() {
 		// 随机数种子是unsigned int型的，而time是秒级的，所以如果按钮一秒内被按下多次，这一秒内的随机数种子就会是一样的
 		// 进而导致一秒内按下多次但是界面不刷新。暂无解决方法
 		srand(time(NULL));
-		for (int i = 0; i < MAX_BLOCK_NUM; i++) {
-			for (int j = 0; j < MAX_BLOCK_NUM; j++) {
+		for (int i = 0; i < mBlockNum; i++) {
+			for (int j = 0; j < mBlockNum; j++) {
 				mBoardData[i][j] = rand() % mColorTypeNum;
 			}
 		}
@@ -99,14 +95,11 @@ public:
 	}
 
 	virtual void processEvent(int eventIndex, int mouseX, int mouseY) override {
-		BeginBatchDraw();
 		if (eventIndex == -1) {
 			processBoardClick(mouseX, mouseY);
 		} else if (eventIndex == 8) {
 			initBoard();
 		}
-		FlushBatchDraw();
-		EndBatchDraw();
 	}
 
 	void processBoardClick(int mouseX, int mouseY) {
@@ -124,10 +117,18 @@ public:
 		if (currColorType == -1) {
 			return;
 		}
-		clearSameColor(xIndex, yIndex);
+		BeginBatchDraw();
+
+		int clearCount = clearSameColor(xIndex, yIndex);
 		letBlockDrop();
 		drawBoardBlock();
 		drawBoardLine();
+		char temp[100] = { 0 };
+		snprintf(temp, 100, "%d", clearCount);
+		mTextList[2]->setText(temp);
+		mTextList[2]->setFontColor(mColorTypes[currColorType]);
+		mTextList[2]->draw();
+		EndBatchDraw();
 	}
 
 	int clearSameColor(int targetXIndex, int targetYIndex) {
@@ -149,29 +150,21 @@ public:
 			it = workList.begin();
 			if (it->second > 0 && mBoardData[it->first][it->second - 1] == currColorType) {
 				workList.push_back(std::make_pair(it->first, it->second - 1));
-				//mBoardData[it->first][it->second - 1] = -1;  // 取消此处注释后为什么会在一竖列同色情况下引发崩溃？
-				clearedBlockCount++;
 			}
 			// 观察下方是否同色
 			it = workList.begin();
 			if (it->second < mBlockNum - 1 && mBoardData[it->first][it->second + 1] == currColorType) {
 				workList.push_back(std::make_pair(it->first, it->second + 1));
-				//mBoardData[it->first][it->second + 1] = -1;
-				clearedBlockCount++;
 			}
 			// 观察左方是否同色
 			it = workList.begin();
 			if (it->first > 0 && mBoardData[it->first - 1][it->second] == currColorType) {
 				workList.push_back(std::make_pair(it->first - 1, it->second));
-				//mBoardData[it->first - 1][it->second] = -1;
-				clearedBlockCount++;
 			}
 			// 观察右方是否同色
 			it = workList.begin();
 			if (it->first < mBlockNum - 1 && mBoardData[it->first + 1][it->second] == currColorType) {
 				workList.push_back(std::make_pair(it->first + 1, it->second));
-				//mBoardData[it->first + 1][it->second] = -1;
-				clearedBlockCount++;
 			}
 
 			workList.erase(workList.begin());
@@ -180,6 +173,22 @@ public:
 	}
 
 	void letBlockDrop() {
-		//
+		for (int i = 0; i < mBlockNum; i++) {
+			for (int j = mBlockNum - 1; j >= 0; j--) {
+				if (mBoardData[i][j] == -1) {
+					continue;
+				}
+				int currY = j;
+				while (currY < mBlockNum - 1) {
+					if (mBoardData[i][currY + 1] == -1) {
+						mBoardData[i][currY + 1] = mBoardData[i][currY];
+						mBoardData[i][currY] = -1;
+					} else{
+						break;
+					}
+					currY++;
+				}
+			}
+		}
 	}
 };

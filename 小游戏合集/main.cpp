@@ -9,7 +9,6 @@
 #include "TextLabel.h"
 
 int main() {
-
 	COLORREF bkColor = LIGHTGRAY;
 	int bkWidth = 1000;
 	int bkHeight = 800;
@@ -59,6 +58,8 @@ int main() {
 	TextLabel text_6_frame_1(frame1TextX, frame1TextY + frame1TextHeight * 1.6, frame1TextWidth, frame1TextHeight * 1.6, bkColor, BLACK, (char*)"0:0:0", true, 6);
 	TextLabel text_7_frame_1(frame1TextX, bkHeight / 4 - frame1TextHeight * 2, frame1TextWidth, frame1TextHeight * 2, bkColor, BLACK, (char*)"井字棋", true, 7);
 	TextLabel text_8_frame_2(350, 70, 300, 100, bkColor, BLACK, (char*)"消消乐", true, 8);
+	TextLabel text_9_frame_2(20, 180, 150, 50, bkColor, BLACK, (char*)"刚才消除", true, 9);
+	TextLabel text_10_frame_2(60, 230, 30, 60, bkColor, BLACK, (char*)"0", true, 10);
 
 	// 将Button加入所属的Frame
 	frame_0_menu.addButton(&button_0_jingziqi);
@@ -83,7 +84,8 @@ int main() {
 	frame_1_jingziqi.addText(&text_7_frame_1);
 
 	frame_2_xiaoxiaole.addText(&text_8_frame_2);
-	
+	frame_2_xiaoxiaole.addText(&text_9_frame_2);
+	frame_2_xiaoxiaole.addText(&text_10_frame_2);
 
 	// 初始化第一个窗口
 	currFrame = &frame_0_menu;
@@ -92,7 +94,7 @@ int main() {
 	ExMessage msg;
 	bool mouseClickFlag = false;
 	bool keyBoardPressFlag = false;
-
+	
 	while (true) {
 		peekmessage(&msg);
 		if (msg.vkcode == VK_ESCAPE) {

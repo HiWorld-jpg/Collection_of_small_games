@@ -29,6 +29,10 @@ public:
 		setText(text);
 	}
 
+	void setFontColor(COLORREF fontColor) {
+		mFontColor = fontColor;
+	}
+
 	void setVisibility(bool visibility) {
 		mVisibility = visibility;
 	}
