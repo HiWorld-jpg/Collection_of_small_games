@@ -7,6 +7,7 @@
 #include "Frame_1_jingziqi.h"
 #include "Frame_2_xiaoxiaole.h"
 #include "TextLabel.h"
+#include "Frame_3_shudu.h"
 
 int main() {
 	COLORREF bkColor = LIGHTGRAY;
@@ -21,6 +22,8 @@ int main() {
 		(bkWidth - bkHeight / 2) / 2, bkHeight / 4, bkHeight / 2, bkHeight / 2, bkColor, BLACK);
 	Frame_2_xiaoxiaole frame_2_xiaoxiaole(bkWidth, bkHeight, bkColor, 2,
 		200, 180, 600, 600, bkColor, BLACK);
+	Frame_3_shudu frame_3_shudu(bkWidth, bkHeight, bkColor, 3,
+		200, 160, 540, 540, bkColor, BLACK);
 
 	// 创建Button
 	Button button_0_jingziqi(100, 100, 130, 50, (char*)"井字棋", bkColor, 0);
@@ -32,6 +35,10 @@ int main() {
 	Button button_6_xiaoxiaole(100, 160, 130, 50, (char*)"消消乐", bkColor, 6);
 	Button button_7_frame_2_to_frame_0(10, 10, 170, 50, (char*)"回到菜单", bkColor, 7);
 	Button button_8_frame_2_playAgain(190, 10, 170, 50, (char*)"重玩", bkColor, 8);
+	Button button_9_frame_shudu(100, 220, 130, 50, (char*)"数独", bkColor, 9);
+	Button button_10_frame_3_to_frame_0(10, 10, 170, 50, (char*)"回到菜单", bkColor, 10);
+	Button button_11_frame_3_load_file(190, 10, 100, 50, (char*)"载入", bkColor, 11);
+	Button button_12_frame_3_save_data(300, 10, 100, 50, (char*)"储存", bkColor, 12);
 
 	// 注册Button, 顺序要严格按照Button index添加
 	Button* allButtons[100];
@@ -44,6 +51,10 @@ int main() {
 	allButtons[6] = &button_6_xiaoxiaole;
 	allButtons[7] = &button_7_frame_2_to_frame_0;
 	allButtons[8] = &button_8_frame_2_playAgain;
+	allButtons[9] = &button_9_frame_shudu;
+	allButtons[10] = &button_10_frame_3_to_frame_0;
+	allButtons[11] = &button_11_frame_3_load_file;
+	allButtons[12] = &button_12_frame_3_save_data;
 
 	int frame1TextX = (bkWidth - bkHeight / 2) / 2;
 	int frame1TextY = bkHeight / 4 * 3;
@@ -64,6 +75,7 @@ int main() {
 	// 将Button加入所属的Frame
 	frame_0_menu.addButton(&button_0_jingziqi);
 	frame_0_menu.addButton(&button_6_xiaoxiaole);
+	frame_0_menu.addButton(&button_9_frame_shudu);
 
 	frame_1_jingziqi.addButton(&button_1_frame_1_to_frame_0);
 	frame_1_jingziqi.addButton(&button_2_frame_1_playAgain);
@@ -73,6 +85,10 @@ int main() {
 
 	frame_2_xiaoxiaole.addButton(&button_7_frame_2_to_frame_0);
 	frame_2_xiaoxiaole.addButton(&button_8_frame_2_playAgain);
+
+	frame_3_shudu.addButton(&button_10_frame_3_to_frame_0);
+	frame_3_shudu.addButton(&button_11_frame_3_load_file);
+	frame_3_shudu.addButton(&button_12_frame_3_save_data);
 
 	frame_1_jingziqi.addText(&text_0_frame_1);
 	frame_1_jingziqi.addText(&text_1_frame_1);
@@ -86,6 +102,7 @@ int main() {
 	frame_2_xiaoxiaole.addText(&text_8_frame_2);
 	frame_2_xiaoxiaole.addText(&text_9_frame_2);
 	frame_2_xiaoxiaole.addText(&text_10_frame_2);
+	
 
 	// 初始化第一个窗口
 	currFrame = &frame_0_menu;
@@ -117,6 +134,12 @@ int main() {
 				currFrame = &frame_2_xiaoxiaole;
 				currFrame->init();
 			} else if (currClickedButtonIndex == 7) {
+				currFrame = &frame_0_menu;
+				currFrame->init();
+			} else if (currClickedButtonIndex == 9) {
+				currFrame = &frame_3_shudu;
+				currFrame->init();
+			} else if (currClickedButtonIndex == 10) {
 				currFrame = &frame_0_menu;
 				currFrame->init();
 			}
