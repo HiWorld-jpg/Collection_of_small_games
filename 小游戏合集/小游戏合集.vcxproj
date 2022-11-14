@@ -28,6 +28,8 @@
     <ClInclude Include="Frame_0_menu.h" />
     <ClInclude Include="Frame_1_jingziqi.h" />
     <ClInclude Include="Frame_2_xiaoxiaole.h" />
+    <ClInclude Include="Frame_3_shudu.h" />
+    <ClInclude Include="FunctionUtils.h" />
     <ClInclude Include="TextLabel.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
