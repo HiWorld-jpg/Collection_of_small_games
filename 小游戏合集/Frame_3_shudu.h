@@ -5,6 +5,7 @@
 #include <vector>
 #include "FunctionUtils.h"
 #include "FileDialog.h"
+#include <stdio.h>
 
 class BoardData {
 private:
@@ -34,7 +35,133 @@ public:
 	}
 
 	void readDataFromFile() {
+		char filePath[MyDialog::FILE_NAME_MAX_LENGTH] = { 0 };
+		MyDialog::selectFileDialogBySuffix((char*)"txt file\0*.shudu\0\0", filePath);
+		// 当前数独文件格式设置为22行
+		char fileContent[22][50] = { 0 };
+		if (checkFileFormat(filePath, fileContent) == false) {
+			return;
+		}
+		for (int i = 2; i <= 10; i++) {
+			int strLength = strlen(fileContent[i]);
+			int numCount = 0;
+			for (int j = 0; j < strLength; j++) {
+				char c = fileContent[i][j];
+				if (j % 2 == 0) {
+					mValue[i - 2][numCount] = c - '0';
+					numCount++;
+				}
+			}
+		}
+		for (int i = 12; i <= 20; i++) {
+			int strLength = strlen(fileContent[i]);
+			int numCount = 0;
+			for (int j = 0; j < strLength; j++) {
+				char c = fileContent[i][j];
+				if (j % 2 == 0) {
+					mValueCanBeWrite[i - 12][numCount] = c - '0';
+					numCount++;
+				}
+			}
+		}
+	}
 
+	bool checkFileFormat(char* filePath, char fileContent[][50]) {
+		if (strlen(filePath) == 0) {
+			return false;
+		}
+		FILE* fp = fopen(filePath, "r");
+		if (fp == NULL) {
+			return false;
+		}
+		int currLine = 0;
+		while (fgets(fileContent[currLine], 50, fp) != NULL) {
+			// fgets会把每行末尾的换行符也当作字符加入到字符串中
+			int strLength = strlen(fileContent[currLine]);
+			if (fileContent[currLine][strLength - 1] == '\n') {
+				fileContent[currLine][strLength - 1] = '\0';
+			}
+			currLine++;
+			if (currLine >= 22) {
+				break;
+			}
+		}
+		if (currLine != 22) {
+			return false;
+		}
+		fclose(fp);
+
+		// 调试用
+		/*
+		closegraph();
+		for (int i = 0; i < 22; i++) {
+			printf("%s\n", fileContent[i]);
+		}
+		printf("\n\n");
+		*/
+		
+		if (strcmp(fileContent[0], (char*)"shudu file begin") != 0) {
+			//printf("1\n");
+			return false;
+		}
+		if (strcmp(fileContent[1], (char*)"value") != 0) {
+			//printf("2\n");
+			return false;
+		}
+		if (strcmp(fileContent[11], (char*)"writeable") != 0) {
+			//printf("3\n");
+			return false;
+		}
+		if (strcmp(fileContent[21], (char*)"shudu file end") != 0) {
+			//printf("4\n");
+			return false;
+		}
+		// 判断value的值是否是0 - 9，且数字与空格相互间隔
+		for (int i = 2; i <= 10; i++) {
+			int strLength = strlen(fileContent[i]);
+			if (strLength == 0 || strLength > 17) {
+				//printf("5\n");
+				return false;
+			}
+			for (int j = 0; j < strLength; j++) {
+				char c = fileContent[i][j];
+				if (j % 2 == 0) {
+					if (c < '0' || c > '9') {
+						//printf("6\n");
+						return false;
+					}
+				} else {
+					if (c != ' ') {
+						//printf("7\n");
+						return false;
+					}
+				}
+			}
+		}
+		// 判断writeable的值是否是0或1，且数字与空格相互间隔
+		for (int i = 12; i <= 20; i++) {
+			int strLength = strlen(fileContent[i]);
+			if (strLength == 0 || strLength > 17) {
+				//printf("8\n");
+				return false;
+			}
+			for (int j = 0; j < strLength; j++) {
+				char c = fileContent[i][j];
+				if (j % 2 == 0) {
+					if (c != '0' && c != '1') {
+						//printf("9\n");
+						return false;
+					}
+				} else {
+					if (c != ' ') {
+						//printf("10\n");
+						return false;
+					}
+				}
+			}
+		}
+
+		return true;
 	}
 };
 
@@ -75,6 +202,10 @@ public:
 
 	void initBoard() {
 		initBoardData();
+		drawBoard();
+	}
+
+	void drawBoard() {
 		setfillcolor(mBoardBkColor);
 		solidrectangle(mBoardX, mBoardY, mBoardX + mBoardWidth, mBoardY + mBoardHeight);
 		drawBoardValue();
@@ -131,7 +262,8 @@ public:
 		if (eventIndex == -1) {
 			processBoardClick(mouseX, mouseY);
 		} else if (eventIndex == 11) {
-
+			mBoardData.readDataFromFile();
+			drawBoard();
 		} else if (eventIndex == 12) {
 
 		}
