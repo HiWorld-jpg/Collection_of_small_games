@@ -1,4 +1,4 @@
-shudu archive begin
+shudu file begin
 value
 0 1 0 0 0 0 0 0 0
 0 0 0 0 0 0 0 0 0
@@ -19,4 +19,4 @@ writeable
 1 1 1 1 1 1 1 1 1
 1 1 1 1 1 1 1 1 1
 1 1 1 1 1 1 1 1 1
-shudu archive end
+shudu file end

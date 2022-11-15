@@ -5,10 +5,11 @@
 #include <ShlObj.h>
 #include <graphics.h>
 
-#define PATH_MAX_LENGTH 300
-#define FILE_NAME_MAX_LENGTH 100
 class MyDialog {
 public:
+	static const int PATH_MAX_LENGTH = 300;
+	static const int FILE_NAME_MAX_LENGTH = 300;
+
 	/*
 	* 入参path同时也是出参，最大字符长度300
 	* 返回值 : 成功 1, 失败 0
@@ -21,6 +22,18 @@ public:
 		ofn.lpstrFile = path;
 		ofn.nMaxFile = PATH_MAX_LENGTH;
 		ofn.lpstrFilter = "All\0*.*\0";
+		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
+		return GetOpenFileName(&ofn);
+	}
+
+	static int selectFileDialogBySuffix(char *suffix, char* path) {
+		OPENFILENAME ofn;
+		ZeroMemory(&ofn, sizeof(ofn));
+		ofn.lStructSize = sizeof(ofn);
+		ofn.lpstrTitle = "选择一个文件";
+		ofn.lpstrFile = path;
+		ofn.nMaxFile = PATH_MAX_LENGTH;
+		ofn.lpstrFilter = suffix;
 		ofn.Flags = OFN_PATHMUSTEXIST | OFN_FILEMUSTEXIST;
 		return GetOpenFileName(&ofn);
 	}
