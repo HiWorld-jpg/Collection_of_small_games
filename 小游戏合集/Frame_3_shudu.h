@@ -163,6 +163,75 @@ public:
 
 		return true;
 	}
+
+	void storeDataToFile() {
+		char dirName[MyDialog::PATH_MAX_LENGTH] = { 0 };
+		MyDialog::selectDirDialog(dirName);
+		if (strlen(dirName) == 0) {
+			return;
+		}
+		time_t nowTime;
+		time(&nowTime);
+		struct tm* currTime = localtime(&nowTime);
+		char fileName[100] = { 0 };
+		snprintf(fileName, 100 - 1, "\\archive_%d%.2d%.2d_%.2d-%.2d-%.2d.shudu",
+			currTime->tm_year + 1900,
+			currTime->tm_mon + 1,
+			currTime->tm_mday + 1,
+			currTime->tm_hour,
+			currTime->tm_min,
+			currTime->tm_sec);
+		char fileAbsolutePath[MyDialog::PATH_MAX_LENGTH + 100] = { 0 };
+		int fileAbsolutePathLength = 0;
+		int dirNameLength = strlen(dirName);
+		for (int i = 0; i < dirNameLength; i++) {
+			if (dirName[i] != '\\') {
+				fileAbsolutePath[fileAbsolutePathLength++] = dirName[i];
+				continue;
+			}
+			fileAbsolutePath[fileAbsolutePathLength++] = '\\';
+		}
+		snprintf(fileAbsolutePath, MyDialog::PATH_MAX_LENGTH + 100 - 1, "%s%s\0", dirName, fileName);
+
+		// 调试用
+		/*closegraph();
+		printf("dirName=%s\n", dirName);
+		printf("fileName=%s\n", fileName);
+		printf("fileAbsolutePath=%s\n", fileAbsolutePath);*/
+
+		FILE* fp = fopen(fileAbsolutePath, "w");
+		if (fp == NULL) {
+			printf("fail to open\n");
+			return;
+		}
+		printf("succees to open\n");
+
+		fputs("shudu file begin\n", fp);
+		fputs("value\n", fp);
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				fputc(mValue[j][i] + '0', fp);
+				if (j == 8) {
+					fputc('\n', fp);
+				} else {
+					fputc(' ', fp);
+				}
+			}
+		}
+		fputs("writeable\n", fp);
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				fputc(mValueCanBeWrite[j][i] + '0', fp);
+				if (j == 8) {
+					fputc('\n', fp);
+				} else {
+					fputc(' ', fp);
+				}
+			}
+		}
+		fputs("shudu file end", fp);
+		fclose(fp);
+	}
 };
 
 class Frame_3_shudu : public Frame {
@@ -265,7 +334,7 @@ public:
 			mBoardData.readDataFromFile();
 			drawBoard();
 		} else if (eventIndex == 12) {
-
+			mBoardData.storeDataToFile();
 		}
 	}
 
