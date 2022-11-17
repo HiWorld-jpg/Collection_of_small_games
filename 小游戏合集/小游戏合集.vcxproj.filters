@@ -47,5 +47,8 @@
     <ClInclude Include="FunctionUtils.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="NumberPad.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

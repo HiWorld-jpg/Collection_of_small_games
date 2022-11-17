@@ -30,6 +30,7 @@
     <ClInclude Include="Frame_2_xiaoxiaole.h" />
     <ClInclude Include="Frame_3_shudu.h" />
     <ClInclude Include="FunctionUtils.h" />
+    <ClInclude Include="NumberPad.h" />
     <ClInclude Include="TextLabel.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

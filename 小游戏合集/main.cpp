@@ -15,6 +15,8 @@ int main() {
 	int bkHeight = 800;
 	initgraph(bkWidth, bkHeight);
 
+	NumberPad* numberPad_1_frame_3 = new NumberPad(780, 160, 200, 150, bkColor);
+
 	// 创建Frame
 	Frame* currFrame = nullptr;
 	Frame_0_menu frame_0_menu(bkWidth, bkHeight, bkColor, 0);
@@ -23,7 +25,7 @@ int main() {
 	Frame_2_xiaoxiaole frame_2_xiaoxiaole(bkWidth, bkHeight, bkColor, 2,
 		200, 180, 600, 600, bkColor, BLACK);
 	Frame_3_shudu frame_3_shudu(bkWidth, bkHeight, bkColor, 3,
-		200, 160, 540, 540, bkColor, BLACK);
+		200, 160, 540, 540, bkColor, BLACK, numberPad_1_frame_3);
 
 	// 创建Button
 	Button button_0_jingziqi(100, 100, 130, 50, (char*)"井字棋", bkColor, 0);

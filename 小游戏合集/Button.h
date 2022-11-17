@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include<graphics.h>
 #include<string.h>
 
@@ -9,7 +9,8 @@ private:
 	int y;
 	int width;
 	int height;
-	char* text;
+	static const int mTextMaxLen = 100;
+	char text[mTextMaxLen];
 	COLORREF bkColor;
 	int globalIndex;
 public:
@@ -26,14 +27,24 @@ public:
 	void setY(int y) { this->y = y; }
 	void setWidth(int width) { this->width = width; }
 	void setHeight(int height) { this->height = height; }
-	void setText(char* text) { this->text = text; }
+	void setText(char* text) {
+		if (text == NULL) {
+			return;
+		}
+		int textLen = strlen(text);
+		if (textLen >= mTextMaxLen) {
+			return;
+		}
+		strncpy(this->text, text, textLen); // strncpyä¸ä¼šå‘å­—ç¬¦ä¸²æœ«å°¾æ·»'\0'
+		this->text[textLen] = '\0';
+	}
 	void setBkColor(COLORREF bkColor) { this->bkColor = bkColor; }
 	void setGlobalIndex(int globalIndex) { this->globalIndex = globalIndex; }
 	int getX() const { return x; }
 	int getY() const { return y; }
 	int getWidth() const { return width; }
 	int getHeight() const { return height; }
-	char* getText() const { return text; }
+	char* getText() { return text; }
 	int getGlobalIndex() const { return globalIndex; }
 
 	void draw() const {
@@ -67,7 +78,7 @@ public:
 		int fontHeight = height * 0.8;
 		int fontWidth = fontHeight / 2;
 		int spaceLeft = (width - fontWidth * textLen) / 2;
-		// Èç¹û¸ß¶ÈÂú×ãµÄÇé¿öÏÂ³¤¶È×ã¹»
+		// å¦‚æžœé«˜åº¦æ»¡è¶³çš„æƒ…å†µä¸‹é•¿åº¦è¶³å¤Ÿ
 		if (spaceLeft > 0) {
 			settextstyle(fontHeight, fontWidth, _T("Fixedsys"));
 			outtextxy(x + spaceLeft, y + height * 0.1, text);

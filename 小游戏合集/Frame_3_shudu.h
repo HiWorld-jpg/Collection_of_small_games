@@ -6,6 +6,7 @@
 #include "FunctionUtils.h"
 #include "FileDialog.h"
 #include <stdio.h>
+#include "NumberPad.h"
 
 class BoardData {
 private:
@@ -243,10 +244,12 @@ private:
 	COLORREF mBoardBkColor;
 	COLORREF mBoardOutlineColor;
 	BoardData mBoardData;
+	NumberPad* mNumberPad = nullptr;
 
 public:
 	Frame_3_shudu(int frameWidth, int frameHeight, COLORREF frameBkColor, int globalIndex,
-		int boardX, int boardY, int boardWidth, int boardHeight, COLORREF boardBkColor, COLORREF boardOutlineColor) :
+		int boardX, int boardY, int boardWidth, int boardHeight, 
+		COLORREF boardBkColor, COLORREF boardOutlineColor, NumberPad *numberPad) :
 		Frame(frameWidth, frameHeight, frameBkColor, globalIndex) {
 		mBoardX = boardX;
 		mBoardY = boardY;
@@ -254,6 +257,7 @@ public:
 		mBoardHeight = boardHeight;
 		mBoardBkColor = boardBkColor;
 		mBoardOutlineColor = boardOutlineColor;
+		mNumberPad = numberPad;
 	}
 
 	virtual void init() override {
@@ -265,6 +269,7 @@ public:
 		for (int i = 0; i < mTextNum; i++) {
 			mTextList[i]->draw();
 		}
+		mNumberPad->draw();
 
 		initBoard();
 	}
@@ -340,6 +345,31 @@ public:
 
 	void processBoardClick(int mouseX, int mouseY) {
 
+	}
+
+	virtual int processMouseClickDown(int mouseX, int mouseY) override {
+		int clickedMouseIndex = -1;
+		for (int i = 0; i < mButtonNum; i++) {
+			if (mButtonList[i]->checkMouseIn(mouseX, mouseY) == true) {
+				mButtonList[i]->drawButtonDown();
+				clickedMouseIndex = mButtonList[i]->getGlobalIndex();
+				break;
+			}
+		}
+		return clickedMouseIndex;
+	}
+
+	virtual int processMouseClickUp(int mouseX, int mouseY) override {
+		int clickedMouseIndex = -1;
+		for (int i = 0; i < mButtonNum; i++) {
+			if (mButtonList[i]->checkMouseIn(mouseX, mouseY) == true) {
+				mButtonList[i]->drawButtonUp();
+				clickedMouseIndex = mButtonList[i]->getGlobalIndex();
+				break;
+			}
+		}
+		processEvent(clickedMouseIndex, mouseX, mouseY);
+		return clickedMouseIndex;
 	}
 
 };
