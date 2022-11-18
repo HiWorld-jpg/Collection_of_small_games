@@ -43,6 +43,7 @@ int main() {
 	Button button_12_frame_3_save_data(300, 10, 100, 50, (char*)"储存", bkColor, 12);
 
 	// 注册Button, 顺序要严格按照Button index添加
+	/*
 	Button* allButtons[100];
 	allButtons[0] = &button_0_jingziqi;
 	allButtons[1] = &button_1_frame_1_to_frame_0;
@@ -57,6 +58,7 @@ int main() {
 	allButtons[10] = &button_10_frame_3_to_frame_0;
 	allButtons[11] = &button_11_frame_3_load_file;
 	allButtons[12] = &button_12_frame_3_save_data;
+	*/
 
 	int frame1TextX = (bkWidth - bkHeight / 2) / 2;
 	int frame1TextY = bkHeight / 4 * 3;
