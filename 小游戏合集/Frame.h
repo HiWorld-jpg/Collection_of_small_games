@@ -77,7 +77,7 @@ public:
 		int clickedMouseIndex = -1;
 		for (int i = 0; i < mButtonNum; i++) {
 			if (mButtonList[i]->checkMouseIn(mouseX, mouseY) == true) {
-				mButtonList[i]->drawButtonDown();
+				mButtonList[i]->drawButtonDown(mouseX, mouseY);
 				clickedMouseIndex = mButtonList[i]->getGlobalIndex();
 				break;
 			}
@@ -89,7 +89,7 @@ public:
 		int clickedMouseIndex = -1;
 		for (int i = 0; i < mButtonNum; i++) {
 			if (mButtonList[i]->checkMouseIn(mouseX, mouseY) == true) {
-				mButtonList[i]->drawButtonUp();
+				mButtonList[i]->drawButtonUp(mouseX, mouseY);
 				clickedMouseIndex = mButtonList[i]->getGlobalIndex();
 				break;
 			}

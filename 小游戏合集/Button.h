@@ -10,7 +10,7 @@ private:
 	int width;
 	int height;
 	static const int mTextMaxLen = 100;
-	char text[mTextMaxLen];
+	char text[mTextMaxLen] = { 0 };
 	COLORREF bkColor;
 	int globalIndex;
 public:
@@ -47,12 +47,12 @@ public:
 	char* getText() { return text; }
 	int getGlobalIndex() const { return globalIndex; }
 
-	void draw() const {
-		drawButtonUp();
+	virtual void draw() const {
+		drawButtonUp(0, 0); // 此时只画按钮，因此鼠标位置不关注
 		drawButtonText();
 	}
 
-	void drawButtonUp() const {
+	virtual void drawButtonUp(int mouseX, int mouseY) const {
 		setlinestyle(PS_SOLID | PS_ENDCAP_FLAT, 2);
 		setlinecolor(BLACK);
 		line(x, y + height, x + width, y + height);
@@ -62,7 +62,7 @@ public:
 		line(x, y, x, y + height);
 	}
 
-	void drawButtonDown() const {
+	virtual void drawButtonDown(int mouseX, int mouseY) const {
 		setlinestyle(PS_SOLID | PS_ENDCAP_FLAT, 2);
 		setlinecolor(BLACK);
 		line(x, y, x + width, y);
@@ -89,7 +89,7 @@ public:
 		
 	}
 
-	bool checkMouseIn(int mouseX, int mouseY) const {
+	virtual bool checkMouseIn(int mouseX, int mouseY) const {
 		if (mouseX < x || mouseX > x + width) {
 			return false;
 		}

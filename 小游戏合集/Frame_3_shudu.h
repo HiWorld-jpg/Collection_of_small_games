@@ -12,6 +12,8 @@ class BoardData {
 private:
 	int mValue[9][9];          // 0代表未填充数值，1-9表示填入的数
 	int mValueCanBeWrite[9][9];  // 1代表可写，0表示不可写
+	int mCurrActiveX = -1;
+	int mCurrActiveY = -1;
 
 public:
 	BoardData() {};
@@ -25,7 +27,7 @@ public:
 		}
 	}
 
-	int getValue(int xIndex, int yIndex) const {
+	int getDataValue(int xIndex, int yIndex) const {
 		if (xIndex < 0 || xIndex > 8) {
 			return -1;
 		}
@@ -33,6 +35,23 @@ public:
 			return -1;
 		}
 		return mValue[xIndex][yIndex];
+	}
+
+	int getActiveX() const { return mCurrActiveX; }
+
+	int getActiveY() const { return mCurrActiveY; }
+
+	void setDataValue(int xIndex, int yIndex, int dataValue) {
+		if (xIndex < 0 || xIndex > 8) {
+			return;
+		}
+		if (yIndex < 0 || yIndex > 8) {
+			return;
+		}
+		if (dataValue < 1 || dataValue > 9) {
+			return;
+		}
+		mValue[xIndex][yIndex] = dataValue;
 	}
 
 	void readDataFromFile() {
@@ -233,6 +252,15 @@ public:
 		fputs("shudu file end", fp);
 		fclose(fp);
 	}
+
+	void setCurrActiveXY(int xIndex, int yIndex) {
+		mCurrActiveX = xIndex;
+		mCurrActiveY = yIndex;
+	}
+
+	void updateActive(int xIndex, int yIndex) {
+		setCurrActiveXY(xIndex, yIndex);
+	}
 };
 
 class Frame_3_shudu : public Frame {
@@ -269,7 +297,6 @@ public:
 		for (int i = 0; i < mTextNum; i++) {
 			mTextList[i]->draw();
 		}
-		mNumberPad->draw();
 
 		initBoard();
 	}
@@ -318,58 +345,123 @@ public:
 		char numToStr[2] = { 0 };
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
-				int currBoardValue = mBoardData.getValue(i, j);
-				if (currBoardValue < 1 || currBoardValue > 9) {
-					continue;
-				}
-				int currX = mBoardX + i * blockWidth;
-				int currY = mBoardY + j * blockHeight;
-				snprintf(numToStr, 2, "%d", currBoardValue);
-				numToStr[1] = '\0';
-				FunctionUtils::printStrToRectangleArea(currX, currY, blockWidth, blockHeight, numToStr, BLACK);
+				drawBlockInActive(i, j);
 			}
 		}
 		
 	}
 
+	void drawBlock(int xIndex, int yIndex) const {
+		if (xIndex == mBoardData.getActiveX() &&
+			yIndex == mBoardData.getActiveY()) {
+			drawBlockActive(xIndex, yIndex);
+		} else {
+			drawBlockInActive(xIndex, yIndex);
+		}
+	}
+
+	void drawBlockActive(int xIndex, int yIndex) const {
+		drawBlockWithBkColor(xIndex, yIndex, LIGHTGREEN, BLACK);
+	}
+
+	void drawBlockInActive(int xIndex, int yIndex) const {
+		drawBlockWithBkColor(xIndex, yIndex, mBoardBkColor, BLACK);
+	}
+
+	void drawBlockWithBkColor(int xIndex, int yIndex, COLORREF bkColor, COLORREF fontColor) const {
+		if (checkXYIndexValid(xIndex, yIndex) == false) {
+			return;
+		}
+		int blockHeight = mBoardHeight / 9;
+		int blockWidth = mBoardWidth / 9;
+		int currX = mBoardX + xIndex * blockWidth;
+		int currY = mBoardY + yIndex * blockHeight;
+		setfillcolor(bkColor);
+		solidrectangle(currX, currY, currX + blockWidth, currY + blockHeight);
+		int currBoardValue = mBoardData.getDataValue(xIndex, yIndex);
+		if (currBoardValue < 1 || currBoardValue > 9) {
+			return;
+		}
+		char numToStr[2] = { 0 };
+		snprintf(numToStr, 2, "%d", currBoardValue);
+		numToStr[1] = '\0';
+		FunctionUtils::printStrToRectangleArea(currX, currY, blockWidth, blockHeight, numToStr, fontColor);
+	}
+
 	virtual void processEvent(int eventIndex, int mouseX, int mouseY) override {
-		if (eventIndex == -1) {
+		if (eventIndex == -1) {  // 没有按到按钮
 			processBoardClick(mouseX, mouseY);
-		} else if (eventIndex == 11) {
+		} else if (eventIndex == 11) { // 按到了载入按钮
 			mBoardData.readDataFromFile();
 			drawBoard();
-		} else if (eventIndex == 12) {
+		} else if (eventIndex == 12) {  // 按道理存储按钮
 			mBoardData.storeDataToFile();
+		} else if (eventIndex == 13) {  // 按到了数字板
+			int numberPadRetNum = mNumberPad->getPressedNumber(mouseX, mouseY);
+			mBoardData.setDataValue(mBoardData.getActiveX(), mBoardData.getActiveY(), numberPadRetNum);
+			drawBlock(mBoardData.getActiveX(), mBoardData.getActiveY());
 		}
 	}
 
 	void processBoardClick(int mouseX, int mouseY) {
-
-	}
-
-	virtual int processMouseClickDown(int mouseX, int mouseY) override {
-		int clickedMouseIndex = -1;
-		for (int i = 0; i < mButtonNum; i++) {
-			if (mButtonList[i]->checkMouseIn(mouseX, mouseY) == true) {
-				mButtonList[i]->drawButtonDown();
-				clickedMouseIndex = mButtonList[i]->getGlobalIndex();
-				break;
-			}
+		if (checkMouseInBoard(mouseX, mouseY) == false) {
+			return;
 		}
-		return clickedMouseIndex;
+		int xIndex = 0;
+		int yIndex = 0;
+
+		BeginBatchDraw();
+
+		calcBoardClickXYIndex(mouseX, mouseY, xIndex, yIndex);
+		int preActiveX = mBoardData.getActiveX();
+		int preActiveY = mBoardData.getActiveY();
+		mBoardData.updateActive(xIndex, yIndex);
+		drawBlock(preActiveX, preActiveY);
+		drawBlock(xIndex, yIndex);
+		drawBoardLine();
+
+		FlushBatchDraw();
+		EndBatchDraw();
 	}
 
 	virtual int processMouseClickUp(int mouseX, int mouseY) override {
 		int clickedMouseIndex = -1;
 		for (int i = 0; i < mButtonNum; i++) {
 			if (mButtonList[i]->checkMouseIn(mouseX, mouseY) == true) {
-				mButtonList[i]->drawButtonUp();
+				mButtonList[i]->drawButtonUp(mouseX, mouseY);
 				clickedMouseIndex = mButtonList[i]->getGlobalIndex();
 				break;
 			}
 		}
 		processEvent(clickedMouseIndex, mouseX, mouseY);
 		return clickedMouseIndex;
+	}
+
+	void calcBoardClickXYIndex(int mouseX, int mouseY, int& xIndex, int& yIndex) const {
+		int blockHeight = mBoardHeight / 9;
+		int blockWidth = mBoardWidth / 9;
+		xIndex = (mouseX - mBoardX) / blockWidth;
+		yIndex = (mouseY - mBoardY) / blockHeight;
+	}
+
+	bool checkMouseInBoard(int mouseX, int mouseY) const {
+		if (mouseX <= mBoardX || mouseX >= mBoardX + mBoardWidth) {
+			return false;
+		}
+		if (mouseY <= mBoardY || mouseY >= mBoardY + mBoardHeight) {
+			return false;
+		}
+		return true;
+	}
+
+	bool checkXYIndexValid(int xIndex, int yIndex) const {
+		if (xIndex < 0 || xIndex > 8) {
+			return false;
+		}
+		if (yIndex < 0 || yIndex > 8) {
+			return false;
+		}
+		return true;
 	}
 
 };
