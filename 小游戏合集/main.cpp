@@ -15,18 +15,6 @@ int main() {
 	int bkHeight = 800;
 	initgraph(bkWidth, bkHeight);
 
-	NumberPad* numberPad_1_frame_3 = new NumberPad(780, 160, 200, 150, bkColor);
-
-	// 创建Frame
-	Frame* currFrame = nullptr;
-	Frame_0_menu frame_0_menu(bkWidth, bkHeight, bkColor, 0);
-	Frame_1_jingziqi frame_1_jingziqi(bkWidth, bkHeight, bkColor, 1,
-		(bkWidth - bkHeight / 2) / 2, bkHeight / 4, bkHeight / 2, bkHeight / 2, bkColor, BLACK);
-	Frame_2_xiaoxiaole frame_2_xiaoxiaole(bkWidth, bkHeight, bkColor, 2,
-		200, 180, 600, 600, bkColor, BLACK);
-	Frame_3_shudu frame_3_shudu(bkWidth, bkHeight, bkColor, 3,
-		200, 160, 540, 540, bkColor, BLACK, numberPad_1_frame_3);
-
 	// 创建Button
 	Button button_0_jingziqi(100, 100, 130, 50, (char*)"井字棋", bkColor, 0);
 	Button button_1_frame_1_to_frame_0(10, 10, 170, 50, (char*)"回到菜单", bkColor, 1);
@@ -41,6 +29,19 @@ int main() {
 	Button button_10_frame_3_to_frame_0(10, 10, 170, 50, (char*)"回到菜单", bkColor, 10);
 	Button button_11_frame_3_load_file(190, 10, 100, 50, (char*)"载入", bkColor, 11);
 	Button button_12_frame_3_save_data(300, 10, 100, 50, (char*)"储存", bkColor, 12);
+	NumberPad* numberPad_1_frame_3 = new NumberPad(780, 160, 200, 150, bkColor, 13); // 13到13+8分别表示数字1到9
+
+	// 创建Frame
+	Frame* currFrame = nullptr;
+	Frame_0_menu frame_0_menu(bkWidth, bkHeight, bkColor, 0);
+	Frame_1_jingziqi frame_1_jingziqi(bkWidth, bkHeight, bkColor, 1,
+		(bkWidth - bkHeight / 2) / 2, bkHeight / 4, bkHeight / 2, bkHeight / 2, bkColor, BLACK);
+	Frame_2_xiaoxiaole frame_2_xiaoxiaole(bkWidth, bkHeight, bkColor, 2,
+		200, 180, 600, 600, bkColor, BLACK);
+	Frame_3_shudu frame_3_shudu(bkWidth, bkHeight, bkColor, 3,
+		200, 160, 540, 540, bkColor, BLACK, numberPad_1_frame_3);
+
+	
 
 	// 注册Button, 顺序要严格按照Button index添加
 	/*
@@ -93,6 +94,7 @@ int main() {
 	frame_3_shudu.addButton(&button_10_frame_3_to_frame_0);
 	frame_3_shudu.addButton(&button_11_frame_3_load_file);
 	frame_3_shudu.addButton(&button_12_frame_3_save_data);
+	frame_3_shudu.addButton(numberPad_1_frame_3);
 
 	frame_1_jingziqi.addText(&text_0_frame_1);
 	frame_1_jingziqi.addText(&text_1_frame_1);

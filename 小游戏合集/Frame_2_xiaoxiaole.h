@@ -103,16 +103,13 @@ public:
 	}
 
 	void processBoardClick(int mouseX, int mouseY) {
-		if (mouseX <= mBoardX || mouseX >= mBoardX + mBoardWidth) {
+		if (checkMouseInBoard(mouseX, mouseY) == false) {
 			return;
 		}
-		if (mouseY <= mBoardY || mouseY >= mBoardY + mBoardHeight) {
-			return;
-		}
-		int blockHeight = mBoardHeight / mBlockNum;
-		int blockWidth = mBoardWidth / mBlockNum;
-		int xIndex = (mouseX - mBoardX) / blockWidth;
-		int yIndex = (mouseY - mBoardY) / blockHeight;
+		int xIndex = 0;
+		int yIndex = 0;
+		calcBoardClickXYIndex(mouseX, mouseY, xIndex, yIndex);
+
 		int currColorType = mBoardData[xIndex][yIndex];
 		if (currColorType == -1) {
 			return;
@@ -129,6 +126,23 @@ public:
 		mTextList[2]->setFontColor(mColorTypes[currColorType]);
 		mTextList[2]->draw();
 		EndBatchDraw();
+	}
+
+	bool checkMouseInBoard(int mouseX, int mouseY) {
+		if (mouseX <= mBoardX || mouseX >= mBoardX + mBoardWidth) {
+			return false;
+		}
+		if (mouseY <= mBoardY || mouseY >= mBoardY + mBoardHeight) {
+			return false;
+		}
+		return true;
+	}
+	
+	void calcBoardClickXYIndex(int mouseX, int mouseY, int& xIndex, int& yIndex) {
+		int blockHeight = mBoardHeight / mBlockNum;
+		int blockWidth = mBoardWidth / mBlockNum;
+		xIndex = (mouseX - mBoardX) / blockWidth;
+		yIndex = (mouseY - mBoardY) / blockHeight;
 	}
 
 	int clearSameColor(int targetXIndex, int targetYIndex) {

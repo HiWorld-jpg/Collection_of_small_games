@@ -1,7 +1,7 @@
 ﻿#pragma once
 #include "Button.h"
 
-class NumberPad{
+class NumberPad : public Button {
 private:
 	int mX;
 	int mY;
@@ -9,13 +9,16 @@ private:
 	int mHeight;
 	COLORREF mBkColor;
 	Button* mButton[9];
+	int mGlobalIndex;
 public:
-	NumberPad(int x, int y, int width, int height, COLORREF bkColor) {
+	NumberPad(int x, int y, int width, int height, COLORREF bkColor, int globalIndex) : 
+		Button(x, y, width, height, NULL, bkColor, globalIndex) {
 		mX = x;
 		mY = y;
 		mWidth = width;
 		mHeight = height;
 		mBkColor = bkColor;
+		mGlobalIndex = globalIndex;
 		createButton();
 	}
 
@@ -31,19 +34,42 @@ public:
 				int buttonIndex = i * 3 + j;
 				numStr[0] = '1' + buttonIndex;
 				mButton[buttonIndex] = new Button(buttonX, buttonY, 
-					buttonWidth, buttonHeight, numStr, mBkColor, buttonIndex);
+					buttonWidth, buttonHeight, numStr, mBkColor, buttonIndex + mGlobalIndex);
 			}
 		}
 	}
 
-	void draw() {
+	virtual void draw() const override {
 		for (int i = 0; i < 9; i++) {
 			mButton[i]->draw();
 		}
 	}
+	
+	virtual void drawButtonDown(int mouseX, int mouseY) const {
+		for (int i = 0; i < 9; i++) {
+			if (mButton[i]->checkMouseIn(mouseX, mouseY)) {
+				mButton[i]->drawButtonDown(mouseX, mouseY);
+				break;
+			}
+		}
+	}
 
-	bool checkMouseIn(int mouseX, int mouseY) {
+	virtual void drawButtonUp(int mouseX, int mouseY) const {
+		for (int i = 0; i < 9; i++) {
+			if (mButton[i]->checkMouseIn(mouseX, mouseY)) {
+				mButton[i]->drawButtonUp(mouseX, mouseY);
+				break;
+			}
+		}
+	}
 
+	int getPressedNumber(int mouseX, int mouseY) const {
+		for (int i = 0; i < 9; i++) {
+			if (mButton[i]->checkMouseIn(mouseX, mouseY)) {
+				return i + 1;
+			}
+		}
+		return -1; // 没有按
 	}
 
 	~NumberPad() {
