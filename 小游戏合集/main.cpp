@@ -30,6 +30,9 @@ int main() {
 	Button button_11_frame_3_load_file(190, 10, 100, 50, (char*)"载入", bkColor, 11);
 	Button button_12_frame_3_save_data(300, 10, 100, 50, (char*)"储存", bkColor, 12);
 	NumberPad* numberPad_1_frame_3 = new NumberPad(780, 160, 200, 150, bkColor, 13); // 13到13+8分别表示数字1到9
+	Button button_22_frame_3_clearBlock(780, 320, 100, 50, (char*)"擦除", bkColor, 22);
+	Button button_23_frame_3_checkBoard(890, 320, 100, 50, (char*)"重置", bkColor, 23);
+	Button button_24_frame_3_checkBoard(780, 380, 100, 50, (char*)"检查", bkColor, 24);
 
 	// 创建Frame
 	Frame* currFrame = nullptr;
@@ -40,8 +43,6 @@ int main() {
 		200, 180, 600, 600, bkColor, BLACK);
 	Frame_3_shudu frame_3_shudu(bkWidth, bkHeight, bkColor, 3,
 		200, 160, 540, 540, bkColor, BLACK, numberPad_1_frame_3);
-
-	
 
 	// 注册Button, 顺序要严格按照Button index添加
 	/*
@@ -76,6 +77,9 @@ int main() {
 	TextLabel text_8_frame_2(350, 70, 300, 100, bkColor, BLACK, (char*)"消消乐", true, 8);
 	TextLabel text_9_frame_2(20, 180, 150, 50, bkColor, BLACK, (char*)"刚才消除", true, 9);
 	TextLabel text_10_frame_2(60, 230, 30, 60, bkColor, BLACK, (char*)"0", true, 10);
+	TextLabel text_11_frame_3(890, 380, 100, 50, BLUE, WHITE, (char*)"无冲突", true, 11);
+	TextLabel text_12_frame_3(890, 380, 100, 50, GREEN, WHITE, (char*)"已完成", true, 12);
+	TextLabel text_13_frame_3(890, 380, 100, 50, RED, WHITE, (char*)"有冲突", true, 13);
 
 	// 将Button加入所属的Frame
 	frame_0_menu.addButton(&button_0_jingziqi);
@@ -95,6 +99,9 @@ int main() {
 	frame_3_shudu.addButton(&button_11_frame_3_load_file);
 	frame_3_shudu.addButton(&button_12_frame_3_save_data);
 	frame_3_shudu.addButton(numberPad_1_frame_3);
+	frame_3_shudu.addButton(&button_22_frame_3_clearBlock);
+	frame_3_shudu.addButton(&button_23_frame_3_checkBoard);
+	frame_3_shudu.addButton(&button_24_frame_3_checkBoard);
 
 	frame_1_jingziqi.addText(&text_0_frame_1);
 	frame_1_jingziqi.addText(&text_1_frame_1);
@@ -108,7 +115,10 @@ int main() {
 	frame_2_xiaoxiaole.addText(&text_8_frame_2);
 	frame_2_xiaoxiaole.addText(&text_9_frame_2);
 	frame_2_xiaoxiaole.addText(&text_10_frame_2);
-	
+
+	frame_3_shudu.addText(&text_11_frame_3);
+	frame_3_shudu.addText(&text_12_frame_3);
+	frame_3_shudu.addText(&text_13_frame_3);
 
 	// 初始化第一个窗口
 	currFrame = &frame_0_menu;
@@ -133,21 +143,27 @@ int main() {
 			if (currClickedButtonIndex == 0) {
 				currFrame = &frame_1_jingziqi;
 				currFrame->init();
+				SetWindowText(GetHWnd(), "小游戏合集--井字棋");
 			} else if (currClickedButtonIndex == 1) {
 				currFrame = &frame_0_menu;
 				currFrame->init();
+				SetWindowText(GetHWnd(), "小游戏合集--菜单");
 			} else if (currClickedButtonIndex == 6) {
 				currFrame = &frame_2_xiaoxiaole;
 				currFrame->init();
+				SetWindowText(GetHWnd(), "小游戏合集--消消乐");
 			} else if (currClickedButtonIndex == 7) {
 				currFrame = &frame_0_menu;
 				currFrame->init();
+				SetWindowText(GetHWnd(), "小游戏合集--菜单");
 			} else if (currClickedButtonIndex == 9) {
 				currFrame = &frame_3_shudu;
 				currFrame->init();
+				SetWindowText(GetHWnd(), "小游戏合集--数独");
 			} else if (currClickedButtonIndex == 10) {
 				currFrame = &frame_0_menu;
 				currFrame->init();
+				SetWindowText(GetHWnd(), "小游戏合集--菜单");
 			}
 		}
 

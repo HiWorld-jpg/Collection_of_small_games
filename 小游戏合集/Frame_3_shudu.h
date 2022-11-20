@@ -16,6 +16,13 @@ private:
 	int mCurrActiveY = -1;
 
 public:
+	static enum STATE {
+		CONFLICT,
+		VAILD_NOT_FINISHED,
+		FINISHED
+	    };
+
+public:
 	BoardData() {};
 
 	void initBoardData() {
@@ -48,7 +55,7 @@ public:
 		if (yIndex < 0 || yIndex > 8) {
 			return;
 		}
-		if (dataValue < 1 || dataValue > 9) {
+		if (dataValue < 0 || dataValue > 9) {
 			return;
 		}
 		mValue[xIndex][yIndex] = dataValue;
@@ -261,6 +268,76 @@ public:
 	void updateActive(int xIndex, int yIndex) {
 		setCurrActiveXY(xIndex, yIndex);
 	}
+
+	bool checkWorkListValid(std::vector<std::pair<int, int>>* workList, std::vector<std::pair<int, int>>* conflictPos) {
+		// 只要这个值不是0，且其他值没有和这个值重复，那么这个值就是合理的
+		for (auto begin = workList->begin(), end = workList->end(); begin != end; ++begin) {
+			int currDataValue = mValue[begin->first][begin->second];
+			if (currDataValue == 0) {
+				continue;
+			}
+			for (auto afterBegin = begin + 1; afterBegin != end; ++afterBegin) {
+				int comparedValue = mValue[afterBegin->first][afterBegin->second];
+				if (currDataValue == 0) {
+					continue;
+				}
+				if (currDataValue == comparedValue) {
+					conflictPos->push_back(std::make_pair(begin->first, begin->second));
+					conflictPos->push_back(std::make_pair(afterBegin->first, afterBegin->second));
+					return false;
+				}
+			}
+		}
+		return true;
+	}
+
+	int checkBoardState(std::vector<std::pair<int, int>> *conflictPos) {
+		std::vector<std::pair<int, int>> workList;
+		// 先看每列是否合理
+		for (int i = 0; i < 9; i++) {
+			workList.clear();
+			for (int j = 0;j < 9; j++) {
+				workList.push_back(std::make_pair(i, j));
+			}
+			if (checkWorkListValid(&workList, conflictPos) == false) {
+				return STATE::CONFLICT;
+			}
+		}
+		// 再看每行是否合理
+		for (int i = 0; i < 9; i++) {
+			workList.clear();
+			for (int j = 0;j < 9; j++) {
+				workList.push_back(std::make_pair(j, i));
+			}
+			if (checkWorkListValid(&workList, conflictPos) == false) {
+				return STATE::CONFLICT;
+			}
+		}
+		// 再看每个九宫格是否合理
+		for (int i = 0; i < 8; i += 3) {
+			for (int j = 0; j < 8; j += 3) {
+				workList.clear();
+				for (int ii = 0; ii < 3; ii++) {
+					for (int jj = 0; jj < 3; jj++) {
+						workList.push_back(std::make_pair(i + ii, j + jj));
+					}
+				}
+				if (checkWorkListValid(&workList, conflictPos) == false) {
+					return STATE::CONFLICT;
+				}
+			}
+		}
+		// 再看是否填满，如果满了，那么说明数独成功完成
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				if (mValue[i][j] == 0) {
+					return STATE::VAILD_NOT_FINISHED;
+				}
+			}
+		}
+
+		return STATE::FINISHED;
+	}
 };
 
 class Frame_3_shudu : public Frame {
@@ -297,13 +374,13 @@ public:
 		for (int i = 0; i < mTextNum; i++) {
 			mTextList[i]->draw();
 		}
-
 		initBoard();
 	}
 
 	void initBoard() {
 		initBoardData();
 		drawBoard();
+		mTextList[0]->draw();
 	}
 
 	void drawBoard() {
@@ -340,15 +417,11 @@ public:
 	}
 
 	void drawBoardValue() const {
-		int blockHeight = mBoardHeight / 9;
-		int blockWidth = mBoardWidth / 9;
-		char numToStr[2] = { 0 };
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
-				drawBlockInActive(i, j);
+				drawBlock(i, j);
 			}
 		}
-		
 	}
 
 	void drawBlock(int xIndex, int yIndex) const {
@@ -389,6 +462,8 @@ public:
 	}
 
 	virtual void processEvent(int eventIndex, int mouseX, int mouseY) override {
+		BeginBatchDraw();
+
 		if (eventIndex == -1) {  // 没有按到按钮
 			processBoardClick(mouseX, mouseY);
 		} else if (eventIndex == 11) { // 按到了载入按钮
@@ -399,8 +474,35 @@ public:
 		} else if (eventIndex == 13) {  // 按到了数字板
 			int numberPadRetNum = mNumberPad->getPressedNumber(mouseX, mouseY);
 			mBoardData.setDataValue(mBoardData.getActiveX(), mBoardData.getActiveY(), numberPadRetNum);
-			drawBlock(mBoardData.getActiveX(), mBoardData.getActiveY());
+			drawBoard();
+		} else if (eventIndex == 22) { // 擦除
+			mBoardData.setDataValue(mBoardData.getActiveX(), mBoardData.getActiveY(), 0);
+			drawBoard();
+		} else if (eventIndex == 23) { // 重置
+			int inputBoxRet = MessageBox(GetHWnd(), "是否继续清空所有已填内容", "危险操作", MB_YESNO | MB_ICONQUESTION);
+			if (inputBoxRet == IDYES) {
+				mBoardData.initBoardData();
+				drawBoard();
+			}
+		} else if (eventIndex == 24) {  // 检查
+			drawBoard();
+			std::vector<std::pair<int, int>> conflictPos;
+			int checkResult = mBoardData.checkBoardState(&conflictPos);
+			if (checkResult == BoardData::STATE::VAILD_NOT_FINISHED) {
+				mTextList[0]->draw();
+			} else if (checkResult == BoardData::STATE::FINISHED) {
+				mTextList[1]->draw();
+			} else if (checkResult == BoardData::STATE::CONFLICT) {
+				mTextList[2]->draw();
+				if (conflictPos.size() == 2) {
+					drawBlockWithBkColor(conflictPos[0].first, conflictPos[0].second, RED, BLACK);
+					drawBlockWithBkColor(conflictPos[1].first, conflictPos[1].second, RED, BLACK);
+				}
+			}
 		}
+
+		FlushBatchDraw();
+		EndBatchDraw();
 	}
 
 	void processBoardClick(int mouseX, int mouseY) {
@@ -410,8 +512,6 @@ public:
 		int xIndex = 0;
 		int yIndex = 0;
 
-		BeginBatchDraw();
-
 		calcBoardClickXYIndex(mouseX, mouseY, xIndex, yIndex);
 		int preActiveX = mBoardData.getActiveX();
 		int preActiveY = mBoardData.getActiveY();
@@ -419,9 +519,6 @@ public:
 		drawBlock(preActiveX, preActiveY);
 		drawBlock(xIndex, yIndex);
 		drawBoardLine();
-
-		FlushBatchDraw();
-		EndBatchDraw();
 	}
 
 	virtual int processMouseClickUp(int mouseX, int mouseY) override {
