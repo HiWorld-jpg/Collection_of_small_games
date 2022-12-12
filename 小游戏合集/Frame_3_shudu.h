@@ -14,6 +14,7 @@ private:
 	int mValueCanBeWrite[9][9];  // 1代表可写，0表示不可写
 	int mCurrActiveX = -1;
 	int mCurrActiveY = -1;
+	int mCurrMode;
 
 public:
 	static enum STATE {
@@ -21,6 +22,11 @@ public:
 		VAILD_NOT_FINISHED,
 		FINISHED
 	    };
+
+	static enum BOARD_MODE {
+		PUZZLE_MODE,   // 解题模式下，mValueCanBeWrite值为0的格子不可修改
+		FREE_MODE      // 自由模式下，所有格子的值均可修改
+	};
 
 public:
 	BoardData() {};
@@ -34,6 +40,10 @@ public:
 		}
 	}
 
+	void setBoardMode(BOARD_MODE mode) {
+		mCurrMode = mode;
+	}
+
 	int getDataValue(int xIndex, int yIndex) const {
 		if (xIndex < 0 || xIndex > 8) {
 			return -1;
@@ -42,6 +52,21 @@ public:
 			return -1;
 		}
 		return mValue[xIndex][yIndex];
+	}
+
+	bool isBlockWritable(int xIndex, int yIndex) const {
+		if (xIndex < 0 || xIndex > 8) {
+			return false;
+		}
+		if (yIndex < 0 || yIndex > 8) {
+			return false;
+		}
+		if (mValueCanBeWrite[xIndex][yIndex] == 0) {
+			return false;
+		} else if (mValueCanBeWrite[xIndex][yIndex] == 1) {
+			return true;
+		}
+		return false;
 	}
 
 	int getActiveX() const { return mCurrActiveX; }
@@ -459,6 +484,24 @@ public:
 		snprintf(numToStr, 2, "%d", currBoardValue);
 		numToStr[1] = '\0';
 		FunctionUtils::printStrToRectangleArea(currX, currY, blockWidth, blockHeight, numToStr, fontColor);
+		if (mBoardData.isBlockWritable(xIndex, yIndex) == false) {
+			drawWritable(xIndex, yIndex, fontColor);
+		}
+	}
+
+	void drawWritable(int xIndex, int yIndex, COLORREF fontColor) const {
+		if (checkXYIndexValid(xIndex, yIndex) == false) {
+			return;
+		}
+		int blockHeight = mBoardHeight / 9;
+		int blockWidth = mBoardWidth / 9;
+		int currX = mBoardX + (xIndex + 1) * blockWidth;  // 定位到格子右下角
+		int currY = mBoardY + (yIndex + 1) * blockHeight;
+		setfillcolor(BLACK);
+		solidrectangle(currX - 8, currY - 8, currX - 2, currY - 2);
+		setlinecolor(fontColor);
+		setlinestyle(PS_SOLID | PS_ENDCAP_FLAT, 1);
+		circle(currX - 5, currY - 8, 2);
 	}
 
 	virtual void processEvent(int eventIndex, int mouseX, int mouseY) override {
@@ -469,7 +512,7 @@ public:
 		} else if (eventIndex == 11) { // 按到了载入按钮
 			mBoardData.readDataFromFile();
 			drawBoard();
-		} else if (eventIndex == 12) {  // 按道理存储按钮
+		} else if (eventIndex == 12) {  // 按到了存储按钮
 			mBoardData.storeDataToFile();
 		} else if (eventIndex == 13) {  // 按到了数字板
 			int numberPadRetNum = mNumberPad->getPressedNumber(mouseX, mouseY);

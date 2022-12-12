@@ -31,8 +31,9 @@ int main() {
 	Button button_12_frame_3_save_data(300, 10, 100, 50, (char*)"储存", bkColor, 12);
 	NumberPad* numberPad_1_frame_3 = new NumberPad(780, 160, 200, 150, bkColor, 13); // 13到13+8分别表示数字1到9
 	Button button_22_frame_3_clearBlock(780, 320, 100, 50, (char*)"擦除", bkColor, 22);
-	Button button_23_frame_3_checkBoard(890, 320, 100, 50, (char*)"重置", bkColor, 23);
+	Button button_23_frame_3_clearBoard(890, 320, 100, 50, (char*)"重置", bkColor, 23);
 	Button button_24_frame_3_checkBoard(780, 380, 100, 50, (char*)"检查", bkColor, 24);
+	Button button_25_frame_3_changeMode(410, 10, 100, 50, (char*)"模式", bkColor, 25);
 
 	// 创建Frame
 	Frame* currFrame = nullptr;
@@ -100,7 +101,7 @@ int main() {
 	frame_3_shudu.addButton(&button_12_frame_3_save_data);
 	frame_3_shudu.addButton(numberPad_1_frame_3);
 	frame_3_shudu.addButton(&button_22_frame_3_clearBlock);
-	frame_3_shudu.addButton(&button_23_frame_3_checkBoard);
+	frame_3_shudu.addButton(&button_23_frame_3_clearBoard);
 	frame_3_shudu.addButton(&button_24_frame_3_checkBoard);
 
 	frame_1_jingziqi.addText(&text_0_frame_1);
