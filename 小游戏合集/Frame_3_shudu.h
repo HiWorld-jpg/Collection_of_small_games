@@ -44,6 +44,10 @@ public:
 		mCurrMode = mode;
 	}
 
+	int getBoardMode() const {
+		return mCurrMode;
+	}
+
 	int getDataValue(int xIndex, int yIndex) const {
 		if (xIndex < 0 || xIndex > 8) {
 			return -1;
@@ -388,6 +392,7 @@ public:
 		mBoardBkColor = boardBkColor;
 		mBoardOutlineColor = boardOutlineColor;
 		mNumberPad = numberPad;
+		mBoardData.setBoardMode(BoardData::BOARD_MODE::PUZZLE_MODE);
 	}
 
 	virtual void init() override {
@@ -540,6 +545,26 @@ public:
 				if (conflictPos.size() == 2) {
 					drawBlockWithBkColor(conflictPos[0].first, conflictPos[0].second, RED, BLACK);
 					drawBlockWithBkColor(conflictPos[1].first, conflictPos[1].second, RED, BLACK);
+				}
+			}
+		} else if (eventIndex == 25) {  // 模式
+			if (mBoardData.getBoardMode() == BoardData::BOARD_MODE::PUZZLE_MODE) {
+				mBoardData.setBoardMode(BoardData::BOARD_MODE::FREE_MODE);
+				char tempStr[20] = { "模式：自由模式" };
+				Button* currButton = getButtonByEventIndex(eventIndex);
+				if (currButton != nullptr) {
+					currButton->setText(tempStr);
+					currButton->clearButtonText();
+					currButton->drawButtonText();
+				}
+			} else {
+				mBoardData.setBoardMode(BoardData::BOARD_MODE::PUZZLE_MODE);
+				char tempStr[20] = { "模式：解题模式" };
+				Button* currButton = getButtonByEventIndex(eventIndex);
+				if (currButton != nullptr) {
+					currButton->setText(tempStr);
+					currButton->clearButtonText();
+					currButton->drawButtonText();
 				}
 			}
 		}

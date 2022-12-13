@@ -33,7 +33,7 @@ int main() {
 	Button button_22_frame_3_clearBlock(780, 320, 100, 50, (char*)"擦除", bkColor, 22);
 	Button button_23_frame_3_clearBoard(890, 320, 100, 50, (char*)"重置", bkColor, 23);
 	Button button_24_frame_3_checkBoard(780, 380, 100, 50, (char*)"检查", bkColor, 24);
-	Button button_25_frame_3_changeMode(410, 10, 100, 50, (char*)"模式", bkColor, 25);
+	Button button_25_frame_3_changeMode(410, 10, 300, 50, (char*)"模式：解题模式", bkColor, 25);
 
 	// 创建Frame
 	Frame* currFrame = nullptr;
@@ -103,6 +103,7 @@ int main() {
 	frame_3_shudu.addButton(&button_22_frame_3_clearBlock);
 	frame_3_shudu.addButton(&button_23_frame_3_clearBoard);
 	frame_3_shudu.addButton(&button_24_frame_3_checkBoard);
+	frame_3_shudu.addButton(&button_25_frame_3_changeMode);
 
 	frame_1_jingziqi.addText(&text_0_frame_1);
 	frame_1_jingziqi.addText(&text_1_frame_1);
