@@ -89,6 +89,21 @@ public:
 		
 	}
 
+	void clearButtonText() const {
+		int textLen = strlen(text);
+		int fontHeight = height * 0.8;
+		int fontWidth = fontHeight / 2;
+		int spaceLeft = (width - fontWidth * textLen) / 2;
+		// 如果高度满足的情况下长度足够
+		if (spaceLeft > 0) {
+			setfillcolor(bkColor);
+			solidrectangle(x + spaceLeft, y + height * 0.1, x + spaceLeft + textLen * fontWidth, y + height * 0.9);
+		} else {
+			// settextstyle(fontHeight, width / textLen, _T("Fixedsys"));
+			// outtextxy(x, y + height * 0.1, text);
+		}
+	}
+
 	virtual bool checkMouseIn(int mouseX, int mouseY) const {
 		if (mouseX < x || mouseX > x + width) {
 			return false;

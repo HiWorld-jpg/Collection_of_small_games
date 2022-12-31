@@ -36,6 +36,15 @@ public:
 		return -1;
 	}
 
+	virtual Button* getButtonByEventIndex(int eventIndex) const {
+		for (int i = 0; i < mButtonNum; i++) {
+			if (mButtonList[i]->getGlobalIndex() == eventIndex) {
+				return mButtonList[i];
+			}
+		}
+		return nullptr;
+	}
+
 	virtual bool addButton(Button* currButton) {
 		if (currButton == nullptr) {
 			return false;
