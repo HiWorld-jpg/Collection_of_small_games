@@ -33,7 +33,10 @@ int main() {
 	Button button_22_frame_3_clearBlock(780, 320, 100, 50, (char*)"擦除", bkColor, 22);
 	Button button_23_frame_3_clearBoard(890, 320, 100, 50, (char*)"重置", bkColor, 23);
 	Button button_24_frame_3_checkBoard(780, 380, 100, 50, (char*)"检查", bkColor, 24);
-	Button button_25_frame_3_changeMode(410, 10, 300, 50, (char*)"模式：解题模式", bkColor, 25);
+	Button button_25_frame_3_changeMode(410, 10, 170, 50, (char*)"解题模式", bkColor, 25);
+	Button button_26_frame_3_maxSolve(780, 500, 210, 50, (char*)"最大值解法", bkColor, 26);
+	Button button_27_frame_3_minSolve(780, 560, 210, 50, (char*)"最小值解法", bkColor, 27);
+	Button button_28_frame_3_animation(590, 10, 170, 50, (char*)"动画: 开", bkColor, 28);
 
 	// 创建Frame
 	Frame* currFrame = nullptr;
@@ -81,6 +84,7 @@ int main() {
 	TextLabel text_11_frame_3(890, 380, 100, 50, BLUE, WHITE, (char*)"无冲突", true, 11);
 	TextLabel text_12_frame_3(890, 380, 100, 50, GREEN, WHITE, (char*)"已完成", true, 12);
 	TextLabel text_13_frame_3(890, 380, 100, 50, RED, WHITE, (char*)"有冲突", true, 13);
+	TextLabel text_14_frame_3(780, 440, 210, 50, CYAN, BLACK, (char*)"耗时0分0秒0毫秒", true, 14);
 
 	// 将Button加入所属的Frame
 	frame_0_menu.addButton(&button_0_jingziqi);
@@ -104,6 +108,9 @@ int main() {
 	frame_3_shudu.addButton(&button_23_frame_3_clearBoard);
 	frame_3_shudu.addButton(&button_24_frame_3_checkBoard);
 	frame_3_shudu.addButton(&button_25_frame_3_changeMode);
+	frame_3_shudu.addButton(&button_26_frame_3_maxSolve);
+	frame_3_shudu.addButton(&button_27_frame_3_minSolve);
+	frame_3_shudu.addButton(&button_28_frame_3_animation);
 
 	frame_1_jingziqi.addText(&text_0_frame_1);
 	frame_1_jingziqi.addText(&text_1_frame_1);
@@ -121,6 +128,7 @@ int main() {
 	frame_3_shudu.addText(&text_11_frame_3);
 	frame_3_shudu.addText(&text_12_frame_3);
 	frame_3_shudu.addText(&text_13_frame_3);
+	frame_3_shudu.addText(&text_14_frame_3);
 
 	// 初始化第一个窗口
 	currFrame = &frame_0_menu;
