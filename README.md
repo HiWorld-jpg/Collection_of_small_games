@@ -7,7 +7,7 @@
 
 ![local picture](./小游戏合集/picture/井字棋运行图片.png)
 ![local picture](./小游戏合集/picture/消消乐运行图片.png)
-![local picture](./小游戏合集/picture/数独_demo_20221120.png)
+![local picture](./小游戏合集/picture/数独_demo_20221231.png)
 
 ## 编译环境
 1. 把easyX集成到visual studio中。具体操作可以直接百度搜索easyX，进入官网，有说明
