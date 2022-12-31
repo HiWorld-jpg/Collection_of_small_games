@@ -24,8 +24,9 @@ public:
 	    };
 
 	static enum BOARD_MODE {
-		PUZZLE_MODE,   // 解题模式下，mValueCanBeWrite值为0的格子不可修改
-		FREE_MODE      // 自由模式下，所有格子的值均可修改
+		PUZZLE_MODE,    // 解题模式下，mValueCanBeWrite值为0的格子不可修改，存储时格子的可写性不变
+		FREE_MODE,      // 自由模式下，所有格子的值均可修改，存储时格子的可写性强制改为可写
+		CREATE_MODE     // 创题模式下，所有格子的值均可修改，存储时如果格子里有值，那么可写性强制改为不可写，如果无值，则可写
 	};
 
 public:
@@ -85,6 +86,9 @@ public:
 			return;
 		}
 		if (dataValue < 0 || dataValue > 9) {
+			return;
+		}
+		if (mCurrMode == BOARD_MODE::PUZZLE_MODE && isBlockWritable(xIndex, yIndex) == false) {
 			return;
 		}
 		mValue[xIndex][yIndex] = dataValue;
@@ -233,7 +237,7 @@ public:
 		snprintf(fileName, 100 - 1, "\\archive_%d%.2d%.2d_%.2d-%.2d-%.2d.shudu",
 			currTime->tm_year + 1900,
 			currTime->tm_mon + 1,
-			currTime->tm_mday + 1,
+			currTime->tm_mday,
 			currTime->tm_hour,
 			currTime->tm_min,
 			currTime->tm_sec);
@@ -277,7 +281,18 @@ public:
 		fputs("writeable\n", fp);
 		for (int i = 0; i < 9; i++) {
 			for (int j = 0; j < 9; j++) {
-				fputc(mValueCanBeWrite[j][i] + '0', fp);
+				if (mCurrMode == BOARD_MODE::PUZZLE_MODE) {
+					fputc(mValueCanBeWrite[j][i] + '0', fp);
+				} else if (mCurrMode == BOARD_MODE::FREE_MODE) {
+					fputc('1', fp);
+				} else if (mCurrMode == BOARD_MODE::CREATE_MODE) {
+					if (mValue[j][i] == 0) {
+						fputc('1', fp);
+					} else if (mValue[j][i] >= 1 && mValue[j][i] <= 9) {
+						fputc('0', fp);
+					}
+				}
+				
 				if (j == 8) {
 					fputc('\n', fp);
 				} else {
@@ -366,6 +381,21 @@ public:
 		}
 
 		return STATE::FINISHED;
+	}
+
+	void resetBoardData() {
+		for (int i = 0; i < 9; i++) {
+			for (int j = 0; j < 9; j++) {
+				if (mCurrMode == BoardData::BOARD_MODE::PUZZLE_MODE) {
+					if (isBlockWritable(i, j) == true) {
+						setDataValue(i, j, 0);
+					}
+				} else if (mCurrMode == BoardData::BOARD_MODE::FREE_MODE ||
+					getBoardMode() == BoardData::BOARD_MODE::CREATE_MODE) {
+					setDataValue(i, j, 0);
+				}
+			}
+		}
 	}
 };
 
@@ -489,7 +519,7 @@ public:
 		snprintf(numToStr, 2, "%d", currBoardValue);
 		numToStr[1] = '\0';
 		FunctionUtils::printStrToRectangleArea(currX, currY, blockWidth, blockHeight, numToStr, fontColor);
-		if (mBoardData.isBlockWritable(xIndex, yIndex) == false) {
+		if (mBoardData.getBoardMode() == BoardData::BOARD_MODE::PUZZLE_MODE && mBoardData.isBlockWritable(xIndex, yIndex) == false) {
 			drawWritable(xIndex, yIndex, fontColor);
 		}
 	}
@@ -502,11 +532,19 @@ public:
 		int blockWidth = mBoardWidth / 9;
 		int currX = mBoardX + (xIndex + 1) * blockWidth;  // 定位到格子右下角
 		int currY = mBoardY + (yIndex + 1) * blockHeight;
+		int lockBodyLeftUpX = currX - 10;
+		int lockBodyLeftUpY = currY - 9;
+		int lockBodyRightDownX = currX - 4;
+		int lockBodyRightDownY = currY - 4;
 		setfillcolor(BLACK);
-		solidrectangle(currX - 8, currY - 8, currX - 2, currY - 2);
+		solidrectangle(lockBodyLeftUpX, lockBodyLeftUpY, lockBodyRightDownX, lockBodyRightDownY);
 		setlinecolor(fontColor);
 		setlinestyle(PS_SOLID | PS_ENDCAP_FLAT, 1);
-		circle(currX - 5, currY - 8, 2);
+		int lockLineLength = 2;
+		int lockLineOffset = 1;
+		line(lockBodyLeftUpX + lockLineOffset, lockBodyLeftUpY, lockBodyLeftUpX + lockLineOffset, lockBodyLeftUpY - lockLineLength);
+		line(lockBodyRightDownX - lockLineOffset, lockBodyLeftUpY, lockBodyRightDownX - lockLineOffset, lockBodyLeftUpY - lockLineLength);
+		circle((lockBodyLeftUpX + lockBodyRightDownX) / 2, lockBodyLeftUpY - lockLineLength, (lockBodyRightDownX - lockBodyLeftUpX) / 2 - lockLineOffset);
 	}
 
 	virtual void processEvent(int eventIndex, int mouseX, int mouseY) override {
@@ -529,7 +567,7 @@ public:
 		} else if (eventIndex == 23) { // 重置
 			int inputBoxRet = MessageBox(GetHWnd(), "是否继续清空所有已填内容", "危险操作", MB_YESNO | MB_ICONQUESTION);
 			if (inputBoxRet == IDYES) {
-				mBoardData.initBoardData();
+				mBoardData.resetBoardData();
 				drawBoard();
 			}
 		} else if (eventIndex == 24) {  // 检查
@@ -556,8 +594,19 @@ public:
 					currButton->setText(tempStr);
 					currButton->clearButtonText();
 					currButton->drawButtonText();
+					drawBoard();
 				}
-			} else {
+			} else if (mBoardData.getBoardMode() == BoardData::BOARD_MODE::FREE_MODE) {
+				mBoardData.setBoardMode(BoardData::BOARD_MODE::CREATE_MODE);
+				char tempStr[20] = { "模式：创题模式" };
+				Button* currButton = getButtonByEventIndex(eventIndex);
+				if (currButton != nullptr) {
+					currButton->setText(tempStr);
+					currButton->clearButtonText();
+					currButton->drawButtonText();
+					drawBoard();
+				}
+			} else if (mBoardData.getBoardMode() == BoardData::BOARD_MODE::CREATE_MODE) {
 				mBoardData.setBoardMode(BoardData::BOARD_MODE::PUZZLE_MODE);
 				char tempStr[20] = { "模式：解题模式" };
 				Button* currButton = getButtonByEventIndex(eventIndex);
@@ -565,6 +614,7 @@ public:
 					currButton->setText(tempStr);
 					currButton->clearButtonText();
 					currButton->drawButtonText();
+					drawBoard();
 				}
 			}
 		}
