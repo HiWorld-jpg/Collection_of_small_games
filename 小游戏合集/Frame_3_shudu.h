@@ -7,6 +7,7 @@
 #include "FileDialog.h"
 #include <stdio.h>
 #include "NumberPad.h"
+#include <Windows.h>
 
 class BoardData {
 private:
@@ -326,8 +327,10 @@ public:
 					continue;
 				}
 				if (currDataValue == comparedValue) {
-					conflictPos->push_back(std::make_pair(begin->first, begin->second));
-					conflictPos->push_back(std::make_pair(afterBegin->first, afterBegin->second));
+					if (conflictPos != nullptr) {
+						conflictPos->push_back(std::make_pair(begin->first, begin->second));
+						conflictPos->push_back(std::make_pair(afterBegin->first, afterBegin->second));
+					}
 					return false;
 				}
 			}
@@ -335,7 +338,7 @@ public:
 		return true;
 	}
 
-	int checkBoardState(std::vector<std::pair<int, int>> *conflictPos) {
+	int checkBoardState(std::vector<std::pair<int, int>> *conflictPos = nullptr) {
 		std::vector<std::pair<int, int>> workList;
 		// 先看每列是否合理
 		for (int i = 0; i < 9; i++) {
@@ -397,6 +400,8 @@ public:
 			}
 		}
 	}
+
+	
 };
 
 class Frame_3_shudu : public Frame {
@@ -409,6 +414,7 @@ private:
 	COLORREF mBoardOutlineColor;
 	BoardData mBoardData;
 	NumberPad* mNumberPad = nullptr;
+	bool mEnableAnimation = true;
 
 public:
 	Frame_3_shudu(int frameWidth, int frameHeight, COLORREF frameBkColor, int globalIndex,
@@ -509,10 +515,11 @@ public:
 		int blockWidth = mBoardWidth / 9;
 		int currX = mBoardX + xIndex * blockWidth;
 		int currY = mBoardY + yIndex * blockHeight;
+		int gap = 3; // 防止清除格子边框
 		setfillcolor(bkColor);
-		solidrectangle(currX, currY, currX + blockWidth, currY + blockHeight);
+		solidrectangle(currX + gap, currY + gap, currX + blockWidth - gap, currY + blockHeight - gap);
 		int currBoardValue = mBoardData.getDataValue(xIndex, yIndex);
-		if (currBoardValue < 1 || currBoardValue > 9) {
+		if (currBoardValue <= 0 || currBoardValue > 9) {
 			return;
 		}
 		char numToStr[2] = { 0 };
@@ -572,23 +579,11 @@ public:
 			}
 		} else if (eventIndex == 24) {  // 检查
 			drawBoard();
-			std::vector<std::pair<int, int>> conflictPos;
-			int checkResult = mBoardData.checkBoardState(&conflictPos);
-			if (checkResult == BoardData::STATE::VAILD_NOT_FINISHED) {
-				mTextList[0]->draw();
-			} else if (checkResult == BoardData::STATE::FINISHED) {
-				mTextList[1]->draw();
-			} else if (checkResult == BoardData::STATE::CONFLICT) {
-				mTextList[2]->draw();
-				if (conflictPos.size() == 2) {
-					drawBlockWithBkColor(conflictPos[0].first, conflictPos[0].second, RED, BLACK);
-					drawBlockWithBkColor(conflictPos[1].first, conflictPos[1].second, RED, BLACK);
-				}
-			}
+			checkBoardValid();
 		} else if (eventIndex == 25) {  // 模式
 			if (mBoardData.getBoardMode() == BoardData::BOARD_MODE::PUZZLE_MODE) {
 				mBoardData.setBoardMode(BoardData::BOARD_MODE::FREE_MODE);
-				char tempStr[20] = { "模式：自由模式" };
+				char tempStr[20] = { "自由模式" };
 				Button* currButton = getButtonByEventIndex(eventIndex);
 				if (currButton != nullptr) {
 					currButton->setText(tempStr);
@@ -598,7 +593,7 @@ public:
 				}
 			} else if (mBoardData.getBoardMode() == BoardData::BOARD_MODE::FREE_MODE) {
 				mBoardData.setBoardMode(BoardData::BOARD_MODE::CREATE_MODE);
-				char tempStr[20] = { "模式：创题模式" };
+				char tempStr[20] = { "创题模式" };
 				Button* currButton = getButtonByEventIndex(eventIndex);
 				if (currButton != nullptr) {
 					currButton->setText(tempStr);
@@ -608,7 +603,85 @@ public:
 				}
 			} else if (mBoardData.getBoardMode() == BoardData::BOARD_MODE::CREATE_MODE) {
 				mBoardData.setBoardMode(BoardData::BOARD_MODE::PUZZLE_MODE);
-				char tempStr[20] = { "模式：解题模式" };
+				char tempStr[20] = { "解题模式" };
+				Button* currButton = getButtonByEventIndex(eventIndex);
+				if (currButton != nullptr) {
+					currButton->setText(tempStr);
+					currButton->clearButtonText();
+					currButton->drawButtonText();
+					drawBoard();
+				}
+			}
+		} else if (eventIndex == 26) { // 最大值解法
+			if (checkBoardValid() == true) {
+				mTextList[3]->setText((char*)"耗时0分0秒0毫秒");
+				mTextList[3]->draw();
+				FlushBatchDraw();
+
+				SYSTEMTIME timeStart = { 0 };
+				SYSTEMTIME timeEnd = { 0 };
+				GetLocalTime(&timeStart);
+
+				maxSolve();
+
+				GetLocalTime(&timeEnd);
+				unsigned int timeEndMilliSeconds = timeEnd.wMinute * 60 * 1000 + timeEnd.wSecond * 1000 + timeEnd.wMilliseconds;
+				unsigned int timeStartMilliSeconds = timeStart.wMinute * 60 * 1000 + timeStart.wSecond * 1000 + timeStart.wMilliseconds;
+				unsigned int allMilliSeconds = timeEndMilliSeconds - timeStartMilliSeconds;
+				WORD minuteCost = allMilliSeconds / (60 * 1000);
+				WORD secondCost = (allMilliSeconds - minuteCost * 60 * 1000) / 1000;
+				WORD milliSecondCost = allMilliSeconds - minuteCost * 60 * 1000 - secondCost * 1000;
+				char tempStr2[50] = { 0 };
+				snprintf(tempStr2, 50 - 1, "耗时%u分%u秒%u毫秒", minuteCost, secondCost, milliSecondCost);
+
+				mTextList[3]->setText(tempStr2);
+				mTextList[3]->draw();
+				drawBoard();
+				checkBoardValid();
+			}
+			
+		} else if (eventIndex == 27) { // 最小值解法
+			if (checkBoardValid() == true) {
+				mTextList[3]->setText((char*)"耗时0分0秒0毫秒");
+				mTextList[3]->draw();
+				FlushBatchDraw();
+
+				SYSTEMTIME timeStart = { 0 };
+				SYSTEMTIME timeEnd = { 0 };
+				GetLocalTime(&timeStart);
+
+				minSolve();
+
+				GetLocalTime(&timeEnd);
+				unsigned int timeEndMilliSeconds = timeEnd.wMinute * 60 * 1000 + timeEnd.wSecond * 1000 + timeEnd.wMilliseconds;
+				unsigned int timeStartMilliSeconds = timeStart.wMinute * 60 * 1000 + timeStart.wSecond * 1000 + timeStart.wMilliseconds;
+				unsigned int allMilliSeconds = timeEndMilliSeconds - timeStartMilliSeconds;
+				WORD minuteCost = allMilliSeconds / (60 * 1000);
+				WORD secondCost = (allMilliSeconds - minuteCost * 60 * 1000) / 1000;
+				WORD milliSecondCost = allMilliSeconds - minuteCost * 60 * 1000 - secondCost * 1000;
+				char tempStr[50] = { 0 };
+				snprintf(tempStr, 50 - 1, "耗时%u分%u秒%u毫秒", minuteCost, secondCost, milliSecondCost);
+
+				mTextList[3]->setText(tempStr);
+				mTextList[3]->draw();
+				drawBoard();
+				checkBoardValid();
+			}
+			
+		} else if (eventIndex == 28) { // 动画
+			if (mEnableAnimation == true) {
+				mEnableAnimation = false;
+				char tempStr[10] = { "动画: 关" };
+				Button* currButton = getButtonByEventIndex(eventIndex);
+				if (currButton != nullptr) {
+					currButton->setText(tempStr);
+					currButton->clearButtonText();
+					currButton->drawButtonText();
+					drawBoard();
+				}
+			} else {
+				mEnableAnimation = true;
+				char tempStr[10] = { "动画: 开" };
 				Button* currButton = getButtonByEventIndex(eventIndex);
 				if (currButton != nullptr) {
 					currButton->setText(tempStr);
@@ -679,4 +752,123 @@ public:
 		return true;
 	}
 
+	bool checkBoardValid() {
+		std::vector<std::pair<int, int>> conflictPos;
+		int checkResult = mBoardData.checkBoardState(&conflictPos);
+		if (checkResult == BoardData::STATE::VAILD_NOT_FINISHED) {
+			mTextList[0]->draw();
+			return true;
+		} else if (checkResult == BoardData::STATE::FINISHED) {
+			mTextList[1]->draw();
+			return true;
+		} else if (checkResult == BoardData::STATE::CONFLICT) {
+			mTextList[2]->draw();
+			if (conflictPos.size() == 2) {
+				drawBlockWithBkColor(conflictPos[0].first, conflictPos[0].second, RED, BLACK);
+				drawBlockWithBkColor(conflictPos[1].first, conflictPos[1].second, RED, BLACK);
+			}
+			return false;
+		}
+		return false;
+	}
+
+	bool minSolve() {
+		int currXIndex = -1;
+		int currYIndex = -1;
+		bool isFoundEmptyBlock = false;
+		for (int i = 0; i < 9; i++) {
+			isFoundEmptyBlock = false;
+			for (int j = 0; j < 9; j++) {
+				if (mBoardData.getDataValue(j, i) == 0) {
+					currXIndex = j;
+					currYIndex = i;
+					isFoundEmptyBlock = true;
+					break;
+				}
+			}
+			if (isFoundEmptyBlock == true) {
+				break;
+			}
+		}
+
+		if (isFoundEmptyBlock == false) {
+			return false;
+		}
+
+		for (int i = 1; i <= 9; i++) {
+			mBoardData.setDataValue(currXIndex, currYIndex, i);
+			if (mEnableAnimation == true) {
+				drawBlock(currXIndex, currYIndex);
+				FlushBatchDraw();
+			}
+			int currState = mBoardData.checkBoardState();
+			if (currState == BoardData::STATE::CONFLICT) {
+				continue;
+			} else if (currState == BoardData::STATE::VAILD_NOT_FINISHED) {
+				bool result = minSolve();
+				if (result == true) {
+					return true;
+				}
+			} else if (currState == BoardData::STATE::FINISHED) {
+				return true;
+			}
+		}
+		mBoardData.setDataValue(currXIndex, currYIndex, 0);
+		if (mEnableAnimation == true) {
+			drawBlock(currXIndex, currYIndex);
+			FlushBatchDraw();
+		}
+
+		return false;
+	}
+
+	bool maxSolve() {
+		int currXIndex = -1;
+		int currYIndex = -1;
+		bool isFoundEmptyBlock = false;
+		for (int i = 0; i < 9; i++) {
+			isFoundEmptyBlock = false;
+			for (int j = 0; j < 9; j++) {
+				if (mBoardData.getDataValue(j, i) == 0) {
+					currXIndex = j;
+					currYIndex = i;
+					isFoundEmptyBlock = true;
+					break;
+				}
+			}
+			if (isFoundEmptyBlock == true) {
+				break;
+			}
+		}
+
+		if (isFoundEmptyBlock == false) {
+			return false;
+		}
+
+		for (int i = 9; i >= 1; i--) {
+			mBoardData.setDataValue(currXIndex, currYIndex, i);
+			if (mEnableAnimation == true) {
+				drawBlock(currXIndex, currYIndex);
+				FlushBatchDraw();
+			}
+			int currState = mBoardData.checkBoardState();
+			if (currState == BoardData::STATE::CONFLICT) {
+				continue;
+			} else if (currState == BoardData::STATE::VAILD_NOT_FINISHED) {
+				bool result = minSolve();
+				if (result == true) {
+					return true;
+				}
+			} else if (currState == BoardData::STATE::FINISHED) {
+				return true;
+			}
+		}
+		mBoardData.setDataValue(currXIndex, currYIndex, 0);
+		if (mEnableAnimation == true) {
+			drawBlock(currXIndex, currYIndex);
+			FlushBatchDraw();
+		}
+
+		return false;
+	}
 };
