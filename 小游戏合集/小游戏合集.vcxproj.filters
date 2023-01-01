@@ -50,5 +50,30 @@
     <ClInclude Include="NumberPad.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Frame_4_lottery.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="resource.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="小游戏合集.rc">
+      <Filter>资源文件</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="picture\shuangSeQiu_rule.png">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="picture\shuangSeQiu_money.png">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="picture\daLeTou_money.png">
+      <Filter>资源文件</Filter>
+    </Image>
+    <Image Include="picture\daLeTou_rule.png">
+      <Filter>资源文件</Filter>
+    </Image>
   </ItemGroup>
 </Project>

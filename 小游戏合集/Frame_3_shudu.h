@@ -587,7 +587,6 @@ public:
 				Button* currButton = getButtonByEventIndex(eventIndex);
 				if (currButton != nullptr) {
 					currButton->setText(tempStr);
-					currButton->clearButtonText();
 					currButton->drawButtonText();
 					drawBoard();
 				}
@@ -597,7 +596,6 @@ public:
 				Button* currButton = getButtonByEventIndex(eventIndex);
 				if (currButton != nullptr) {
 					currButton->setText(tempStr);
-					currButton->clearButtonText();
 					currButton->drawButtonText();
 					drawBoard();
 				}
@@ -607,7 +605,6 @@ public:
 				Button* currButton = getButtonByEventIndex(eventIndex);
 				if (currButton != nullptr) {
 					currButton->setText(tempStr);
-					currButton->clearButtonText();
 					currButton->drawButtonText();
 					drawBoard();
 				}
@@ -675,7 +672,6 @@ public:
 				Button* currButton = getButtonByEventIndex(eventIndex);
 				if (currButton != nullptr) {
 					currButton->setText(tempStr);
-					currButton->clearButtonText();
 					currButton->drawButtonText();
 					drawBoard();
 				}
@@ -685,7 +681,6 @@ public:
 				Button* currButton = getButtonByEventIndex(eventIndex);
 				if (currButton != nullptr) {
 					currButton->setText(tempStr);
-					currButton->clearButtonText();
 					currButton->drawButtonText();
 					drawBoard();
 				}

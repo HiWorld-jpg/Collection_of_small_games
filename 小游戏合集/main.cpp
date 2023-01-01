@@ -8,8 +8,12 @@
 #include "Frame_2_xiaoxiaole.h"
 #include "TextLabel.h"
 #include "Frame_3_shudu.h"
+#include "Frame_4_lottery.h"
+
 
 int main() {
+	srand(time(NULL));
+
 	COLORREF bkColor = LIGHTGRAY;
 	int bkWidth = 1000;
 	int bkHeight = 800;
@@ -37,6 +41,12 @@ int main() {
 	Button button_26_frame_3_maxSolve(780, 500, 210, 50, (char*)"最大值解法", bkColor, 26);
 	Button button_27_frame_3_minSolve(780, 560, 210, 50, (char*)"最小值解法", bkColor, 27);
 	Button button_28_frame_3_animation(590, 10, 170, 50, (char*)"动画: 开", bkColor, 28);
+	Button button_29_lottery(100, 280, 130, 50, (char*)"彩票", bkColor, 29);
+	Button button_30_frame_4_to_frame_0(10, 10, 170, 50, (char*)"回到菜单", bkColor, 30);
+	Button button_31_frame_4_changeMode(190, 10, 250, 50, (char*)"模式：大乐透", bkColor, 31);
+	Button button_32_frame_4_generateNum(450, 10, 100, 50, (char*)"生成", bkColor, 32);
+	Button button_33_frame_4_readme(560, 10, 100, 50, (char*)"说明", bkColor, 33);
+
 
 	// 创建Frame
 	Frame* currFrame = nullptr;
@@ -47,6 +57,7 @@ int main() {
 		200, 180, 600, 600, bkColor, BLACK);
 	Frame_3_shudu frame_3_shudu(bkWidth, bkHeight, bkColor, 3,
 		200, 160, 540, 540, bkColor, BLACK, numberPad_1_frame_3);
+	Frame_4_lottery frame_4_lottery(bkWidth, bkHeight, bkColor, 4);
 
 	// 注册Button, 顺序要严格按照Button index添加
 	/*
@@ -90,6 +101,7 @@ int main() {
 	frame_0_menu.addButton(&button_0_jingziqi);
 	frame_0_menu.addButton(&button_6_xiaoxiaole);
 	frame_0_menu.addButton(&button_9_frame_shudu);
+	frame_0_menu.addButton(&button_29_lottery);
 
 	frame_1_jingziqi.addButton(&button_1_frame_1_to_frame_0);
 	frame_1_jingziqi.addButton(&button_2_frame_1_playAgain);
@@ -111,6 +123,11 @@ int main() {
 	frame_3_shudu.addButton(&button_26_frame_3_maxSolve);
 	frame_3_shudu.addButton(&button_27_frame_3_minSolve);
 	frame_3_shudu.addButton(&button_28_frame_3_animation);
+
+	frame_4_lottery.addButton(&button_30_frame_4_to_frame_0);
+	frame_4_lottery.addButton(&button_31_frame_4_changeMode);
+	frame_4_lottery.addButton(&button_32_frame_4_generateNum);
+	frame_4_lottery.addButton(&button_33_frame_4_readme);
 
 	frame_1_jingziqi.addText(&text_0_frame_1);
 	frame_1_jingziqi.addText(&text_1_frame_1);
@@ -171,6 +188,14 @@ int main() {
 				currFrame->init();
 				SetWindowText(GetHWnd(), "小游戏合集--数独");
 			} else if (currClickedButtonIndex == 10) {
+				currFrame = &frame_0_menu;
+				currFrame->init();
+				SetWindowText(GetHWnd(), "小游戏合集--菜单");
+			} else if (currClickedButtonIndex == 29) {
+				currFrame = &frame_4_lottery;
+				currFrame->init();
+				SetWindowText(GetHWnd(), "小游戏合集--彩票");
+			} else if (currClickedButtonIndex == 30) {
 				currFrame = &frame_0_menu;
 				currFrame->init();
 				SetWindowText(GetHWnd(), "小游戏合集--菜单");
