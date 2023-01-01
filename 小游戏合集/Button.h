@@ -73,6 +73,8 @@ public:
 	}
 
 	void drawButtonText() const {
+		clearButtonText();
+
 		settextcolor(BLACK);
 		int textLen = strlen(text);
 		int fontHeight = height * 0.8;

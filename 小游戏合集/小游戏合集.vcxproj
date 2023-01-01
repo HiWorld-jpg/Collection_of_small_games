@@ -29,9 +29,20 @@
     <ClInclude Include="Frame_1_jingziqi.h" />
     <ClInclude Include="Frame_2_xiaoxiaole.h" />
     <ClInclude Include="Frame_3_shudu.h" />
+    <ClInclude Include="Frame_4_lottery.h" />
     <ClInclude Include="FunctionUtils.h" />
     <ClInclude Include="NumberPad.h" />
+    <ClInclude Include="resource.h" />
     <ClInclude Include="TextLabel.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="小游戏合集.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="picture\daLeTou_money.png" />
+    <Image Include="picture\daLeTou_rule.png" />
+    <Image Include="picture\shuangSeQiu_money.png" />
+    <Image Include="picture\shuangSeQiu_rule.png" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
