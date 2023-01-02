@@ -9,6 +9,7 @@
 #include "TextLabel.h"
 #include "Frame_3_shudu.h"
 #include "Frame_4_lottery.h"
+#include "Frame_5_lianliankan.h"
 
 
 int main() {
@@ -46,7 +47,10 @@ int main() {
 	Button button_31_frame_4_changeMode(190, 10, 250, 50, (char*)"模式：大乐透", bkColor, 31);
 	Button button_32_frame_4_generateNum(450, 10, 100, 50, (char*)"生成", bkColor, 32);
 	Button button_33_frame_4_readme(560, 10, 100, 50, (char*)"说明", bkColor, 33);
-
+	Button button_34_frame_5_to_frame_0(10, 10, 170, 50, (char*)"回到菜单", bkColor, 34);
+	Button button_35_lianliankan(100, 340, 130, 50, (char*)"连连看", bkColor, 35);
+	Button button_36_frame_5_test1(190, 10, 170, 50, (char*)"测试1", bkColor, 36);
+	Button button_37_frame_5_test2(370, 10, 170, 50, (char*)"测试2", bkColor, 37);
 
 	// 创建Frame
 	Frame* currFrame = nullptr;
@@ -58,6 +62,7 @@ int main() {
 	Frame_3_shudu frame_3_shudu(bkWidth, bkHeight, bkColor, 3,
 		200, 160, 540, 540, bkColor, BLACK, numberPad_1_frame_3);
 	Frame_4_lottery frame_4_lottery(bkWidth, bkHeight, bkColor, 4);
+	Frame_5_lianliankan frame_5_lianliankan(bkWidth, bkHeight, bkColor, 5);
 
 	// 注册Button, 顺序要严格按照Button index添加
 	/*
@@ -102,6 +107,7 @@ int main() {
 	frame_0_menu.addButton(&button_6_xiaoxiaole);
 	frame_0_menu.addButton(&button_9_frame_shudu);
 	frame_0_menu.addButton(&button_29_lottery);
+	frame_0_menu.addButton(&button_35_lianliankan);
 
 	frame_1_jingziqi.addButton(&button_1_frame_1_to_frame_0);
 	frame_1_jingziqi.addButton(&button_2_frame_1_playAgain);
@@ -128,6 +134,10 @@ int main() {
 	frame_4_lottery.addButton(&button_31_frame_4_changeMode);
 	frame_4_lottery.addButton(&button_32_frame_4_generateNum);
 	frame_4_lottery.addButton(&button_33_frame_4_readme);
+
+	frame_5_lianliankan.addButton(&button_34_frame_5_to_frame_0);
+	frame_5_lianliankan.addButton(&button_36_frame_5_test1);
+	frame_5_lianliankan.addButton(&button_37_frame_5_test2);
 
 	frame_1_jingziqi.addText(&text_0_frame_1);
 	frame_1_jingziqi.addText(&text_1_frame_1);
@@ -199,6 +209,14 @@ int main() {
 				currFrame = &frame_0_menu;
 				currFrame->init();
 				SetWindowText(GetHWnd(), "小游戏合集--菜单");
+			} else if (currClickedButtonIndex == 34) {
+				currFrame = &frame_0_menu;
+				currFrame->init();
+				SetWindowText(GetHWnd(), "小游戏合集--菜单");
+			} else if (currClickedButtonIndex == 35) {
+				currFrame = &frame_5_lianliankan;
+				currFrame->init();
+				SetWindowText(GetHWnd(), "小游戏合集--连连看");
 			}
 		}
 
