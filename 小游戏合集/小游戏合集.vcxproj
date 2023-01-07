@@ -35,6 +35,7 @@
     <ClInclude Include="NumberPad.h" />
     <ClInclude Include="resource.h" />
     <ClInclude Include="TextLabel.h" />
+    <ClInclude Include="TimeCount.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="小游戏合集.rc" />
