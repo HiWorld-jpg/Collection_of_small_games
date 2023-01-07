@@ -108,4 +108,6 @@ public:
 	}
 
 	virtual void processEvent(int eventIndex, int mouseX, int mouseY) {}
+
+	virtual void processSomethingInLoop() {}
 };

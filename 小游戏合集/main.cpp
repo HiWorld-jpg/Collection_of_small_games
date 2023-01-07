@@ -49,7 +49,7 @@ int main() {
 	Button button_33_frame_4_readme(560, 10, 100, 50, (char*)"说明", bkColor, 33);
 	Button button_34_frame_5_to_frame_0(10, 10, 170, 50, (char*)"回到菜单", bkColor, 34);
 	Button button_35_lianliankan(100, 340, 130, 50, (char*)"连连看", bkColor, 35);
-	Button button_36_frame_5_test1(190, 10, 170, 50, (char*)"测试1", bkColor, 36);
+	Button button_36_frame_5_test1(190, 10, 130, 50, (char*)"新游戏", bkColor, 36);
 	Button button_37_frame_5_test2(370, 10, 170, 50, (char*)"测试2", bkColor, 37);
 
 	// 创建Frame
@@ -219,6 +219,8 @@ int main() {
 				SetWindowText(GetHWnd(), "小游戏合集--连连看");
 			}
 		}
+
+		currFrame->processSomethingInLoop();
 
 		if (msg.message == WM_KEYDOWN && keyBoardPressFlag == false) {
 			keyBoardPressFlag = true;
