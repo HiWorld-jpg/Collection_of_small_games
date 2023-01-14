@@ -52,6 +52,7 @@ public:
 		time_t interval = currTime - mCountStart;
 		if (interval > mAllSeconds) {
 			mCurrSeconds = 0;
+			mIsCounting = false;
 			return;
 		}
 		if (mCurrSeconds == mAllSeconds - interval) { // 一秒以内，不需要更新，防止draw调用次数过多
