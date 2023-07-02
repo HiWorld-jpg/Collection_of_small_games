@@ -2,6 +2,7 @@
 #include <time.h>
 #include <graphics.h>
 #include <stdio.h>
+#include <iostream>
 
 class CountDown {
 private:
@@ -58,6 +59,9 @@ public:
 		if (mCurrSeconds == mAllSeconds - interval) { // 一秒以内，不需要更新，防止draw调用次数过多
 			return;
 		}
+		
+		std::cout << "mCurrSeconds = " << mCurrSeconds << std::endl;
+
 		mCurrSeconds = mAllSeconds - interval;
 		draw();
 	}

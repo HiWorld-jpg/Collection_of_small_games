@@ -5,13 +5,14 @@
 - 消消乐
 - 数独
 - 彩票
-- 连连看 （正在学习多线程）
+- 连连看
 
 ![local picture](./小游戏合集/picture/井字棋运行图片.png)
 ![local picture](./小游戏合集/picture/消消乐运行图片.png)
 ![local picture](./小游戏合集/picture/数独_demo_20221231.png)
 ![local picture](./小游戏合集/picture/彩票-双色球运行图片.png)
 ![local picture](./小游戏合集/picture/彩票-大乐透运行图片.png)
+![local picture](./小游戏合集/picture/连连看运行图片.png)
 
 ## 编译环境
 1. 把easyX集成到visual studio中。具体操作可以直接百度搜索easyX，进入官网，有说明
