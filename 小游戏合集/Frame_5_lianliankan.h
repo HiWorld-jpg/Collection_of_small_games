@@ -29,7 +29,7 @@ private:
 	// 0 ~ mPicTypeNum - 1代表各个图案
 	// -1代表空值
 	// -2是临时值，用来表示寻路算法中的脚印
-	int mBoardData[mBoardXMax][mBoardYMax];  // 大小固定为横向20个格子，纵向15个格子
+	int mBoardData[mBoardXMax][mBoardYMax];
 	bool mBoardDataPatten[mBoardXMax][mBoardYMax];  // 限制格子能不能加元素，true表示会填充元素，false表示不填充即当作空白处理
 
 public:
@@ -64,16 +64,44 @@ public:
 		mPic[0].path = (char*)"./picture/lianliankan_picture/axial_symmetry.png";
 		mPic[1].path = (char*)"./picture/lianliankan_picture/black_ball.png";
 		mPic[2].path = (char*)"./picture/lianliankan_picture/block_L.png";
-		mPic[3].path = (char*)"./picture/lianliankan_picture/chicken.png";
-		mPic[4].path = (char*)"./picture/lianliankan_picture/dice.png";
-		mPic[5].path = (char*)"./picture/lianliankan_picture/emoticon_man_with_sunglasses.png";
-		mPic[6].path = (char*)"./picture/lianliankan_picture/pumpkin.png";
-		mPic[7].path = (char*)"./picture/lianliankan_picture/gesture_palm.png";
-		mPic[8].path = (char*)"./picture/lianliankan_picture/octopus.png";
-		mPic[9].path = (char*)"./picture/lianliankan_picture/spade.png";
-		mPic[10].path = (char*)"./picture/lianliankan_picture/wall_clock.png";
+		mPic[3].path = (char*)"./picture/lianliankan_picture/block_long.png";
+		mPic[4].path = (char*)"./picture/lianliankan_picture/block_reverse_L.png";
+		mPic[5].path = (char*)"./picture/lianliankan_picture/block_reverse_z.png";
+		mPic[6].path = (char*)"./picture/lianliankan_picture/block_T.png";
+		mPic[7].path = (char*)"./picture/lianliankan_picture/block_z.png";
+		mPic[8].path = (char*)"./picture/lianliankan_picture/blue_ball.png";
+		mPic[9].path = (char*)"./picture/lianliankan_picture/bomb.png";
+		mPic[10].path = (char*)"./picture/lianliankan_picture/chicken.png";
+		mPic[11].path = (char*)"./picture/lianliankan_picture/cyan_ball.png";
+		mPic[12].path = (char*)"./picture/lianliankan_picture/desk_clock.png";
+		mPic[13].path = (char*)"./picture/lianliankan_picture/dice.png";
+		mPic[14].path = (char*)"./picture/lianliankan_picture/emoticon_man_with_crying_face.png";
+		mPic[15].path = (char*)"./picture/lianliankan_picture/emoticon_man_with_red_face.png";
+		mPic[16].path = (char*)"./picture/lianliankan_picture/emoticon_man_with_sunglasses.png";
+		mPic[17].path = (char*)"./picture/lianliankan_picture/emoticon_man_with_sweat.png";
+		mPic[18].path = (char*)"./picture/lianliankan_picture/gesture_fist.png";
+		mPic[19].path = (char*)"./picture/lianliankan_picture/gesture_no.png";
+		mPic[20].path = (char*)"./picture/lianliankan_picture/gesture_palm.png";
+		mPic[21].path = (char*)"./picture/lianliankan_picture/gesture_yes.png";
+		mPic[22].path = (char*)"./picture/lianliankan_picture/green_ball.png";
+		mPic[23].path = (char*)"./picture/lianliankan_picture/loop.png";
+		mPic[24].path = (char*)"./picture/lianliankan_picture/magnifier.png";
+		mPic[25].path = (char*)"./picture/lianliankan_picture/octopus.png";
+		mPic[26].path = (char*)"./picture/lianliankan_picture/phone.png";
+		mPic[27].path = (char*)"./picture/lianliankan_picture/pumpkin.png";
+		mPic[28].path = (char*)"./picture/lianliankan_picture/purple_ball.png";
+		mPic[29].path = (char*)"./picture/lianliankan_picture/radar.png";
+		mPic[30].path = (char*)"./picture/lianliankan_picture/real_diamond.png";
+		mPic[31].path = (char*)"./picture/lianliankan_picture/road_block.png";
+		mPic[32].path = (char*)"./picture/lianliankan_picture/shark.png";
+		mPic[33].path = (char*)"./picture/lianliankan_picture/spade.png";
+		mPic[34].path = (char*)"./picture/lianliankan_picture/star.png";
+		mPic[35].path = (char*)"./picture/lianliankan_picture/wall_clock.png";
+		mPic[36].path = (char*)"./picture/lianliankan_picture/xbox.png";
+		mPic[37].path = (char*)"./picture/lianliankan_picture/yellow_ball.png";
+		mPic[38].path = (char*)"./picture/lianliankan_picture/red_ball.png";
 
-		mPicTypeNum = 11;   //注意不要超过mPicMaxNum
+		mPicTypeNum = 39;   //注意不要超过mPicMaxNum
 		for (int i = 0; i < mPicTypeNum; i++) {
 			mPic[i].id = i;
 		}
@@ -91,12 +119,77 @@ public:
 	void initBoardData() {
 		srand(time(NULL));
 		initBoardDataPatten();
+		std::vector<std::pair<int, int>> emptyBlocks;
 		for (int i = 0; i < mBoardXMax; i++) {
 			for (int j = 0; j < mBoardYMax; j++) {
-				mBoardData[i][j] = rand() % mPicTypeNum;
+				if (mBoardDataPatten[i][j] == true) {
+					emptyBlocks.push_back(std::make_pair(i, j));
+				}
 			}
 		}
-		
+		// 保证两两配对，否则会出现有方块无法消除的情况
+		if (emptyBlocks.size() % 2 != 0) {
+			return;
+		}
+		while (emptyBlocks.size() > 0) {
+			// 随机选取图片
+			int currPicType = rand() % mPicTypeNum;
+			// 随机决定要填充到哪个格子里
+			int posIndex = rand() % emptyBlocks.size();
+			int currX = emptyBlocks[posIndex].first;
+			int currY = emptyBlocks[posIndex].second;
+			mBoardData[currX][currY] = currPicType;
+
+			emptyBlocks.erase(emptyBlocks.begin() + posIndex);
+
+			// 再次随机选一个格子填充相同颜色
+			posIndex = rand() % emptyBlocks.size();
+			currX = emptyBlocks[posIndex].first;
+			currY = emptyBlocks[posIndex].second;
+			mBoardData[currX][currY] = currPicType;
+
+			emptyBlocks.erase(emptyBlocks.begin() + posIndex);
+		}
+	}
+	
+	void shuffleBoard() {
+		srand(time(NULL));
+		std::vector<std::pair<int, int>> validBlocks;
+		for (int i = 0; i < mBoardXMax; i++) {
+			for (int j = 0; j < mBoardYMax; j++) {
+				if (mBoardDataPatten[i][j] == true) {
+					validBlocks.push_back(std::make_pair(i, j));
+				}
+			}
+		}
+		// 保证两两配对，否则会出现有方块无法消除的情况
+		if (validBlocks.size() % 2 != 0) {
+			return;
+		}
+		// 图片类型id <索引X, 索引Y>
+		std::vector<std::pair<int, std::pair<int, int>>> existedBlocks;
+		for (int i = 0; i < mBoardXMax; i++) {
+			for (int j = 0; j < mBoardYMax; j++) {
+				if (mBoardData[i][j] >= 0) {
+					existedBlocks.push_back(std::make_pair(mBoardData[i][j], std::make_pair(i, j)));
+					mBoardData[i][j] = -1;
+				}
+			}
+		}
+		while (existedBlocks.size() > 0) {
+			// 随机决定要填充到哪个格子里
+			int posIndex = rand() % validBlocks.size();
+			int destX = validBlocks[posIndex].first;
+			int destY = validBlocks[posIndex].second;
+			int srcX = existedBlocks[0].second.first;
+			int srcY = existedBlocks[0].second.second;
+			int srcPicType = existedBlocks[0].first;
+			mBoardData[destX][destY] = srcPicType;
+
+			validBlocks.erase(validBlocks.begin() + posIndex);
+			existedBlocks.erase(existedBlocks.begin());
+		}
+
 	}
 
 	void drawBoardLine() const {
@@ -256,7 +349,7 @@ public:
 				int endLineY = mBoardY + resultPath[i + 1].second * boardGridHeight + boardGridHeight / 2;
 				line(startLineX, startLineY, endLineX, endLineY);
 			}
-			Sleep(500);
+			Sleep(200);
 		}
 
 	}
@@ -268,13 +361,20 @@ public:
 		int xIndex = 0;
 		int yIndex = 0;
 		calcBoardClickXYIndex(mouseX, mouseY, xIndex, yIndex);
+		// 连续两次点击相同方块，不做处理
+		if (mCurrActiveX == xIndex && mCurrActiveY == yIndex) {
+			return;
+		}
 		// 初次点击面板，初始化
+		FlushBatchDraw();
+		EndBatchDraw();
 		if (mCurrActiveX != -1 && mCurrActiveY != -1) {
 			if (mBoardData[mCurrActiveX][mCurrActiveY] != -1 &&
 				mBoardData[mCurrActiveX][mCurrActiveY] == mBoardData[xIndex][yIndex]) {
 				eliminateBlock(xIndex, yIndex);
 			}
 		}
+		BeginBatchDraw();
 		mCurrActiveX = xIndex;
 		mCurrActiveY = yIndex;
 		drawBoard();
@@ -282,7 +382,7 @@ public:
 	}
 
 	virtual void processEvent(int eventIndex, int mouseX, int mouseY) override {
-		// BeginBatchDraw();
+		BeginBatchDraw();
 		if (eventIndex == -1) {
 			processBoardClick(mouseX, mouseY);
 		} else if (eventIndex == 36) {
@@ -290,10 +390,11 @@ public:
 			initBoardData();
 			drawBoard();
 		} else if (eventIndex == 37) {
-
+			shuffleBoard();
+			drawBoard();
 		}
-		// FlushBatchDraw();
-		// EndBatchDraw();
+		FlushBatchDraw();
+		EndBatchDraw();
 	}
 
 	virtual void processSomethingInLoop() override {

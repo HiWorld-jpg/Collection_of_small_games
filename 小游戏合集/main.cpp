@@ -50,6 +50,7 @@ int main() {
 	Button button_34_frame_5_to_frame_0(10, 10, 170, 50, (char*)"回到菜单", bkColor, 34);
 	Button button_35_lianliankan(100, 340, 130, 50, (char*)"连连看", bkColor, 35);
 	Button button_36_frame_5_startGame(190, 10, 130, 50, (char*)"新游戏", bkColor, 36);
+	Button button_37_frame_5_shuffle(330, 10, 100, 50, (char*)"重排", bkColor, 37);
 
 	// 创建Frame
 	Frame* currFrame = nullptr;
@@ -137,6 +138,7 @@ int main() {
 
 	frame_5_lianliankan.addButton(&button_34_frame_5_to_frame_0);
 	frame_5_lianliankan.addButton(&button_36_frame_5_startGame);
+	frame_5_lianliankan.addButton(&button_37_frame_5_shuffle);
 
 	frame_1_jingziqi.addText(&text_0_frame_1);
 	frame_1_jingziqi.addText(&text_1_frame_1);
