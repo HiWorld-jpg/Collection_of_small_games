@@ -613,6 +613,7 @@ public:
 			if (checkBoardValid() == true) {
 				mTextList[3]->setText((char*)"耗时0分0秒0毫秒");
 				mTextList[3]->draw();
+				mTextList[4]->draw();
 				FlushBatchDraw();
 
 				SYSTEMTIME timeStart = { 0 };
@@ -641,6 +642,7 @@ public:
 			if (checkBoardValid() == true) {
 				mTextList[3]->setText((char*)"耗时0分0秒0毫秒");
 				mTextList[3]->draw();
+				mTextList[4]->draw();
 				FlushBatchDraw();
 
 				SYSTEMTIME timeStart = { 0 };

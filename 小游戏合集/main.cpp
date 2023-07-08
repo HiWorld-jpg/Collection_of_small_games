@@ -103,6 +103,7 @@ int main() {
 	TextLabel text_12_frame_3(890, 380, 100, 50, GREEN, WHITE, (char*)"已完成", true, 12);
 	TextLabel text_13_frame_3(890, 380, 100, 50, RED, WHITE, (char*)"有冲突", true, 13);
 	TextLabel text_14_frame_3(780, 440, 210, 50, CYAN, BLACK, (char*)"耗时0分0秒0毫秒", true, 14);
+	TextLabel text_15_frame_3(890, 380, 100, 50, BROWN, WHITE, (char*)"运行中", true, 15);
 
 	// 将Button加入所属的Frame
 	frame_0_menu.addButton(&button_0_jingziqi);
@@ -159,6 +160,7 @@ int main() {
 	frame_3_shudu.addText(&text_12_frame_3);
 	frame_3_shudu.addText(&text_13_frame_3);
 	frame_3_shudu.addText(&text_14_frame_3);
+	frame_3_shudu.addText(&text_15_frame_3);
 
 	// 初始化第一个窗口
 	currFrame = &frame_0_menu;
