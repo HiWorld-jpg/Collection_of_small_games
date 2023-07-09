@@ -107,6 +107,10 @@ public:
 		return clickedMouseIndex;
 	}
 
+	virtual void processMouseDownMove(int mouseX, int mouseY) {
+
+	}
+
 	virtual void processEvent(int eventIndex, int mouseX, int mouseY) {}
 
 	virtual void processSomethingInLoop() {}

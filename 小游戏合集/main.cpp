@@ -10,6 +10,7 @@
 #include "Frame_3_shudu.h"
 #include "Frame_4_lottery.h"
 #include "Frame_5_lianliankan.h"
+#include "Frame_6_guaguale.h"
 
 
 int main() {
@@ -53,6 +54,10 @@ int main() {
 	Button button_37_frame_5_shuffle(330, 10, 100, 50, (char*)"重排", bkColor, 37);
 	Button button_38_frame_5_autoSearch(440, 10, 130, 50, (char*)"帮我找", bkColor, 38);
 
+	Button button_39_guaguale(100, 400, 130, 50, (char*)"刮刮乐", bkColor, 39);
+	Button button_40_frame_6_to_frame_0(10, 10, 170, 50, (char*)"回到菜单", bkColor, 40);
+	Button button_41_frame_6_startGame(190, 10, 130, 50, (char*)"新游戏", bkColor, 41);
+
 	// 创建Frame
 	Frame* currFrame = nullptr;
 	Frame_0_menu frame_0_menu(bkWidth, bkHeight, bkColor, 0);
@@ -65,6 +70,7 @@ int main() {
 	Frame_4_lottery frame_4_lottery(bkWidth, bkHeight, bkColor, 4);
 	Frame_5_lianliankan frame_5_lianliankan(bkWidth, bkHeight, bkColor, 5,
 		bkWidth / 6, bkHeight / 6, bkWidth / 4 * 3, bkHeight / 4 * 3, bkColor, BLACK);
+	Frame_6_guaguale frame_6_guaguale(bkWidth, bkHeight, bkColor, 6);
 
 	// 注册Button, 顺序要严格按照Button index添加
 	/*
@@ -111,6 +117,7 @@ int main() {
 	frame_0_menu.addButton(&button_9_frame_shudu);
 	frame_0_menu.addButton(&button_29_lottery);
 	frame_0_menu.addButton(&button_35_lianliankan);
+	frame_0_menu.addButton(&button_39_guaguale);
 
 	frame_1_jingziqi.addButton(&button_1_frame_1_to_frame_0);
 	frame_1_jingziqi.addButton(&button_2_frame_1_playAgain);
@@ -142,6 +149,9 @@ int main() {
 	frame_5_lianliankan.addButton(&button_36_frame_5_startGame);
 	frame_5_lianliankan.addButton(&button_37_frame_5_shuffle);
 	frame_5_lianliankan.addButton(&button_38_frame_5_autoSearch);
+
+	frame_6_guaguale.addButton(&button_40_frame_6_to_frame_0);
+	frame_6_guaguale.addButton(&button_41_frame_6_startGame);
 
 	frame_1_jingziqi.addText(&text_0_frame_1);
 	frame_1_jingziqi.addText(&text_1_frame_1);
@@ -179,6 +189,11 @@ int main() {
 			mouseClickFlag = true;
 			currFrame->processMouseClickDown(msg.x, msg.y);
 		}
+
+		if (msg.lbutton == true && mouseClickFlag == true) {
+			currFrame->processMouseDownMove(msg.x, msg.y);
+		}
+
 		if (msg.lbutton == false && mouseClickFlag == true) {
 			mouseClickFlag = false;
 			int currClickedButtonIndex = currFrame->processMouseClickUp(msg.x, msg.y);
@@ -222,6 +237,14 @@ int main() {
 				currFrame = &frame_5_lianliankan;
 				currFrame->init();
 				SetWindowText(GetHWnd(), "小游戏合集--连连看");
+			} else if (currClickedButtonIndex == 39) {
+				currFrame = &frame_6_guaguale;
+				currFrame->init();
+				SetWindowText(GetHWnd(), "小游戏合集--刮刮乐");
+			} else if (currClickedButtonIndex == 40) {
+				currFrame = &frame_0_menu;
+				currFrame->init();
+				SetWindowText(GetHWnd(), "小游戏合集--菜单");
 			}
 		}
 

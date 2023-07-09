@@ -6,6 +6,7 @@
 - 数独
 - 彩票
 - 连连看
+- 刮刮乐
 
 ![local picture](./小游戏合集/picture/井字棋运行图片.png)
 ![local picture](./小游戏合集/picture/消消乐运行图片.png)
@@ -13,6 +14,7 @@
 ![local picture](./小游戏合集/picture/彩票-双色球运行图片.png)
 ![local picture](./小游戏合集/picture/彩票-大乐透运行图片.png)
 ![local picture](./小游戏合集/picture/连连看运行图片.png)
+![local picture](./小游戏合集/picture/刮刮乐运行图片.png)
 
 ## 编译环境
 1. 把easyX集成到visual studio中。具体操作可以直接百度搜索easyX，进入官网，有说明
@@ -29,3 +31,4 @@
 
 ## 另外的说明
 1. 如果github的网页上显示不了图片，用这个链接里的方法试一试 https://cloud.tencent.com/developer/article/2072525
+2. 新建的文件在git上传的时候，如果发现中文乱码了，解决方法是：vs2019中选中并打开乱码的文件，点击菜单栏的“文件”，点击“高级保存选项”，选择“Unicode(UTF-8带签名)65001”，然后保存即可。
