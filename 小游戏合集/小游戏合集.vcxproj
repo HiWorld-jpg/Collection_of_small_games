@@ -31,6 +31,7 @@
     <ClInclude Include="Frame_3_shudu.h" />
     <ClInclude Include="Frame_4_lottery.h" />
     <ClInclude Include="Frame_5_lianliankan.h" />
+    <ClInclude Include="Frame_6_guaguale.h" />
     <ClInclude Include="FunctionUtils.h" />
     <ClInclude Include="NumberPad.h" />
     <ClInclude Include="resource.h" />
