@@ -127,6 +127,27 @@ public:
 	}
 };
 
+class Shape {
+private:
+	Block* mBlocks[4][4];
+	// 背板左上角的横纵坐标
+	int mBoardX;
+	int mBoardY;
+	// 横向和纵向的格子数
+	int mXBlocks;
+	int mYBlocks;
+	// 当前格子处于背板的位置，不是坐标，相当于数组下标
+	int mX;
+	int mY;
+	// 背景色
+	COLORREF mBkColor;
+	
+	int mShapeId;
+
+public:
+
+};
+
 class Frame_7_Tetris : public Frame {
 private:
 	int mBoardX = 330;
