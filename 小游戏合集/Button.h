@@ -13,8 +13,10 @@ private:
 	char text[mTextMaxLen] = { 0 };
 	COLORREF bkColor;
 	int globalIndex;
+	// 是否开始按钮文字大小自适应
+	bool mEnableAutoAdapt = false;
 public:
-	Button(int x, int y, int width, int height, char* text, COLORREF bkColor, int globalIndex) {
+	Button(int x, int y, int width, int height, char* text, COLORREF bkColor, int globalIndex, bool enableAutoAdapt = false) {
 		setX(x);
 		setY(y);
 		setWidth(width);
@@ -22,6 +24,7 @@ public:
 		setText(text);
 		setBkColor(bkColor);
 		setGlobalIndex(globalIndex);
+		setEnableAutoAdapt(enableAutoAdapt);
 	}
 	void setX(int x) { this->x = x; }
 	void setY(int y) { this->y = y; }
@@ -40,6 +43,7 @@ public:
 	}
 	void setBkColor(COLORREF bkColor) { this->bkColor = bkColor; }
 	void setGlobalIndex(int globalIndex) { this->globalIndex = globalIndex; }
+	void setEnableAutoAdapt(bool enableAutoAdapt) { mEnableAutoAdapt = enableAutoAdapt; }
 	int getX() const { return x; }
 	int getY() const { return y; }
 	int getWidth() const { return width; }
@@ -72,38 +76,47 @@ public:
 		line(x + width, y, x + width, y + height);
 	}
 
+	bool checkChineseChar(const char* text) const {
+		int textLen = strlen(text);
+		for (int i = 0; i < textLen; i++) {
+			// 我不知道为啥是160，网上查到的
+			char currChar = text[i];
+			unsigned int uiChar = (unsigned int)currChar;
+			if (uiChar > 160) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	void outputColorText(COLORREF outputColor) const {
+		settextcolor(outputColor);
+		if (mEnableAutoAdapt == false) {
+			int textLen = strlen(text);
+			int fontHeight = height * 0.8;
+			int fontWidth = fontHeight / 2;
+			int spaceLeft = (width - fontWidth * textLen) / 2;
+			// 如果高度满足的情况下长度足够
+			if (spaceLeft > 0) {
+				settextstyle(fontHeight, fontWidth, _T("Fixedsys"));
+				outtextxy(x + spaceLeft, y + height * 0.1, text);
+			}
+		} else {
+			int textLen = strlen(text);
+			int fontHeight = height * 0.8;
+			int fontWidth = width * 1 / textLen;
+			settextstyle(fontHeight, fontWidth, _T("宋体"));
+			outtextxy(x, y + height * 0.1, text);
+		}
+	}
+
 	void drawButtonText() const {
 		clearButtonText();
-
-		settextcolor(BLACK);
-		int textLen = strlen(text);
-		int fontHeight = height * 0.8;
-		int fontWidth = fontHeight / 2;
-		int spaceLeft = (width - fontWidth * textLen) / 2;
-		// 如果高度满足的情况下长度足够
-		if (spaceLeft > 0) {
-			settextstyle(fontHeight, fontWidth, _T("Fixedsys"));
-			outtextxy(x + spaceLeft, y + height * 0.1, text);
-		} else {
-			// settextstyle(fontHeight, width / textLen, _T("Fixedsys"));
-			// outtextxy(x, y + height * 0.1, text);
-		}
-		
+		outputColorText(BLACK);
 	}
 
 	void clearButtonText() const {
-		int textLen = strlen(text);
-		int fontHeight = height * 0.8;
-		int fontWidth = fontHeight / 2;
-		int spaceLeft = (width - fontWidth * textLen) / 2;
-		// 如果高度满足的情况下长度足够
-		if (spaceLeft > 0) {
-			setfillcolor(bkColor);
-			solidrectangle(x + spaceLeft, y + height * 0.1, x + spaceLeft + textLen * fontWidth, y + height * 0.9);
-		} else {
-			// settextstyle(fontHeight, width / textLen, _T("Fixedsys"));
-			// outtextxy(x, y + height * 0.1, text);
-		}
+		outputColorText(bkColor);
 	}
 
 	virtual bool checkMouseIn(int mouseX, int mouseY) const {

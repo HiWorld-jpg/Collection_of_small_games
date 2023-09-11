@@ -11,6 +11,7 @@
 #include "Frame_4_lottery.h"
 #include "Frame_5_lianliankan.h"
 #include "Frame_6_guaguale.h"
+#include "Frame_7_Tetris.h"
 
 
 int main() {
@@ -58,6 +59,10 @@ int main() {
 	Button button_40_frame_6_to_frame_0(10, 10, 170, 50, (char*)"回到菜单", bkColor, 40);
 	Button button_41_frame_6_startGame(190, 10, 130, 50, (char*)"新游戏", bkColor, 41);
 
+	Button button_42_tetris(100, 460, 130, 50, (char*)"俄罗斯方块", bkColor, 42, true);
+	Button button_43_frame_7_to_frame_0(10, 10, 170, 50, (char*)"回到菜单", bkColor, 43);
+	Button button_44_frame_7_startGame(190, 10, 130, 50, (char*)"新游戏", bkColor, 44);
+
 	// 创建Frame
 	Frame* currFrame = nullptr;
 	Frame_0_menu frame_0_menu(bkWidth, bkHeight, bkColor, 0);
@@ -71,6 +76,7 @@ int main() {
 	Frame_5_lianliankan frame_5_lianliankan(bkWidth, bkHeight, bkColor, 5,
 		bkWidth / 6, bkHeight / 6, bkWidth / 4 * 3, bkHeight / 4 * 3, bkColor, BLACK);
 	Frame_6_guaguale frame_6_guaguale(bkWidth, bkHeight, bkColor, 6);
+	Frame_7_Tetris frame_7_tetris(bkWidth, bkHeight, bkColor, 7);
 
 	// 注册Button, 顺序要严格按照Button index添加
 	/*
@@ -118,6 +124,7 @@ int main() {
 	frame_0_menu.addButton(&button_29_lottery);
 	frame_0_menu.addButton(&button_35_lianliankan);
 	frame_0_menu.addButton(&button_39_guaguale);
+	frame_0_menu.addButton(&button_42_tetris);
 
 	frame_1_jingziqi.addButton(&button_1_frame_1_to_frame_0);
 	frame_1_jingziqi.addButton(&button_2_frame_1_playAgain);
@@ -152,6 +159,8 @@ int main() {
 
 	frame_6_guaguale.addButton(&button_40_frame_6_to_frame_0);
 	frame_6_guaguale.addButton(&button_41_frame_6_startGame);
+	frame_7_tetris.addButton(&button_43_frame_7_to_frame_0);
+	frame_7_tetris.addButton(&button_44_frame_7_startGame);
 
 	frame_1_jingziqi.addText(&text_0_frame_1);
 	frame_1_jingziqi.addText(&text_1_frame_1);
@@ -192,6 +201,15 @@ int main() {
 
 		if (msg.lbutton == true && mouseClickFlag == true) {
 			currFrame->processMouseDownMove(msg.x, msg.y);
+		}
+
+		if (msg.message == WM_KEYDOWN && keyBoardPressFlag == false) {
+			keyBoardPressFlag = true;
+		}
+
+		if (msg.message == WM_KEYUP && keyBoardPressFlag == true) {
+			keyBoardPressFlag = false;
+			currFrame->processKeyBoardUp(msg.vkcode);
 		}
 
 		if (msg.lbutton == false && mouseClickFlag == true) {
@@ -245,21 +263,18 @@ int main() {
 				currFrame = &frame_0_menu;
 				currFrame->init();
 				SetWindowText(GetHWnd(), "小游戏合集--菜单");
+			} else if (currClickedButtonIndex == 42) {
+				currFrame = &frame_7_tetris;
+				currFrame->init();
+				SetWindowText(GetHWnd(), "小游戏合集--俄罗斯方块");
+			} else if (currClickedButtonIndex == 43) {
+				currFrame = &frame_0_menu;
+				currFrame->init();
+				SetWindowText(GetHWnd(), "小游戏合集--菜单");
 			}
 		}
 
 		currFrame->processSomethingInLoop();
-
-		if (msg.message == WM_KEYDOWN && keyBoardPressFlag == false) {
-			keyBoardPressFlag = true;
-		}
-
-		if (msg.message == WM_KEYUP && keyBoardPressFlag == true) {
-			keyBoardPressFlag = false;
-			if (msg.vkcode == VK_ESCAPE) {
-				return 0;
-			}
-		}
 
 	}
 

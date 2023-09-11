@@ -179,6 +179,7 @@ public:
 		}
 		while (existedBlocks.size() > 0) {
 			// 随机决定要填充到哪个格子里
+			// Release模式下，当初始状态点击“重排”按钮时，会因为size值为0而发生程序崩溃
 			int posIndex = rand() % validBlocks.size();
 			int destX = validBlocks[posIndex].first;
 			int destY = validBlocks[posIndex].second;

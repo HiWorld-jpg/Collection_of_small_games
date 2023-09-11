@@ -65,6 +65,9 @@
     <ClInclude Include="Frame_6_guaguale.h">
       <Filter>头文件</Filter>
     </ClInclude>
+    <ClInclude Include="Frame_7_Tetris.h">
+      <Filter>头文件</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="小游戏合集.rc">
