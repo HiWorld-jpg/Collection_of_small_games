@@ -1,12 +1,13 @@
 # Collection_of_small_games
 ## 小游戏合集
-当前已实现的小游戏有
+当前包含的小游戏有
 - 双人井字棋
 - 消消乐
 - 数独
 - 彩票
 - 连连看
 - 刮刮乐
+- 俄罗斯方块
 
 ![local picture](./小游戏合集/picture/井字棋运行图片.png)
 ![local picture](./小游戏合集/picture/消消乐运行图片.png)
@@ -15,6 +16,7 @@
 ![local picture](./小游戏合集/picture/彩票-大乐透运行图片.png)
 ![local picture](./小游戏合集/picture/连连看运行图片.png)
 ![local picture](./小游戏合集/picture/刮刮乐运行图片.png)
+![local picture](./小游戏合集/picture/俄罗斯方块运行图片.png)
 
 ## 编译环境
 1. 把easyX集成到visual studio中。具体操作可以直接百度搜索easyX，进入官网，有说明
