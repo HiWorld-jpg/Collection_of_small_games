@@ -24,8 +24,8 @@ private:
 	PicType mPic[mPicMaxNum]; // 只给0至mPicTypeNum-1的下标元素赋值，因此取元素时需要严格使用mPicTypeNum约束
 	int mPicTypeNum;
 	// X:Y=5:4是合适比例
-	static const int mBoardXMax = 10;
-	static const int mBoardYMax = 8;
+	static const int mBoardXMax = 20;
+	static const int mBoardYMax = 16;
 	// mBoardData元素的值遵循以下约定
 	// 0 ~ mPicTypeNum - 1代表各个图案
 	// -1代表空值

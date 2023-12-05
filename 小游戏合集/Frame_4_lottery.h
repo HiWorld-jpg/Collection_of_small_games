@@ -84,6 +84,7 @@ public:
 
 	void drawBall(int x, int y, int num, COLORREF numColor, COLORREF backColor, int ballRadius, bool zeroFormat) {
 		setfillcolor(backColor);
+
 		solidcircle(x, y, ballRadius);
 		setbkmode(TRANSPARENT);
 		char numToStr[5] = { 0 };
@@ -97,6 +98,10 @@ public:
 		int numWidth = ballRadius / 2 * 1.5;
 
 		settextstyle(numHeight, numWidth, _T("Consolas"));
+		LOGFONT currFont;
+		gettextstyle(&currFont);
+		currFont.lfQuality = ANTIALIASED_QUALITY;
+		settextstyle(&currFont);
 		if (zeroFormat) {
 			outtextxy(x - numWidth, y - numHeight / 2, numToStr);
 		} else {

@@ -1,21 +1,98 @@
 ﻿#pragma once
 #include "Frame.h"
 
+#define BOARD_SIZE_X 10
+#define BOARD_SIZE_Y 20
+
 // 形状是由4*4的小格子组成的
 #define SHAPE_BLOCK_NUM 4
 
-int shapePrototype[][4][4] = {
+typedef struct ShapePrototype {
+	int shapeBlock[4][4];
+	COLORREF shapeColor;
+	bool canRotate;
+} ShapePrototype;
+
+ShapePrototype shapePrototype[] = {
 	{
-		{0, 1, 0, 0},
-		{0, 1, 0, 0},
-		{0, 1, 1, 0},
-		{0, 0, 0, 0}
+		{
+			{0, 1, 0, 0},
+			{0, 1, 0, 0},
+			{0, 1, 1, 0},
+			{0, 0, 0, 0}
+		},
+		RED,
+		true
 	},
 	{
-		{0, 0, 1, 0},
-		{0, 0, 1, 0},
-		{0, 1, 1, 0},
-		{0, 0, 0, 0}
+		{
+			{0, 0, 1, 0},
+			{0, 0, 1, 0},
+			{0, 1, 1, 0},
+			{0, 0, 0, 0}
+		},
+		RED,
+		true
+	},
+	{
+		{
+			{0, 0, 0, 0},
+			{0, 1, 1, 0},
+			{0, 0, 1, 1},
+			{0, 0, 0, 0}
+		},
+		BLUE,
+		true
+	},
+	{
+		{
+			{0, 0, 0, 0},
+			{0, 0, 1, 1},
+			{0, 1, 1, 0},
+			{0, 0, 0, 0}
+		},
+		BLUE,
+		true
+	},
+	{
+		{
+			{0, 0, 0, 0},
+			{0, 1, 1, 0},
+			{0, 1, 1, 0},
+			{0, 0, 0, 0}
+		},
+		GREEN,
+		false
+	},
+	{
+		{
+			{0, 0, 0, 0},
+			{0, 0, 1, 0},
+			{0, 0, 0, 0},
+			{0, 0, 0, 0}
+		},
+		BROWN,
+		false
+	},
+	{
+		{
+			{0, 0, 0, 0},
+			{0, 1, 1, 1},
+			{0, 0, 1, 0},
+			{0, 0, 0, 0}
+		},
+		YELLOW,
+		true
+	},
+	{
+		{
+			{0, 0, 0, 0},
+			{1, 1, 1, 1},
+			{0, 0, 0, 0},
+			{0, 0, 0, 0}
+		},
+		CYAN,
+		true
 	}
 };
 
@@ -80,6 +157,14 @@ public:
 
 	void setBlockColor(COLORREF color) {
 		mColor = color;
+	}
+
+	int getXPos() const {
+		return mX;
+	}
+
+	int getYPos() const {
+		return mY;
 	}
 
 	void erase() const {
@@ -151,12 +236,22 @@ public:
 	}
 };
 
+// 不new Blocks，负责管理以及delete Blocks
+class Board {
+private:
+	Block* mBlocks[BOARD_SIZE_Y][BOARD_SIZE_X];
+};
+
+// new Block
 class Shape {
 private:
 	Block* mBlocks[SHAPE_BLOCK_NUM][SHAPE_BLOCK_NUM];
 	// 背板左上角的横纵坐标
 	int mBoardX;
 	int mBoardY;
+	// 当前4*4形状左上角的横纵坐标
+	int mX = 5;
+	int mY = 5;
 	// 背景里横向和纵向的格子数
 	int mXBlocks;
 	int mYBlocks;
@@ -167,15 +262,15 @@ private:
 	COLORREF mBkColor;
 	
 	int mShapeId;
+	bool mCanRotate;
 
 public:
-	Shape(int boardX, int boardY, int xBlocks, int yBlocks, int blockSize, COLORREF color, COLORREF bkColor, int shapeId) {
+	Shape(int boardX, int boardY, int xBlocks, int yBlocks, int blockSize, COLORREF bkColor, int shapeId) {
 		this->mBoardX = boardX;
 		this->mBoardY = boardY;
 		this->mXBlocks = xBlocks;
 		this->mYBlocks = yBlocks;
 		this->mBlockSize = blockSize;
-		this->mColor = color;
 		this->mBkColor = bkColor;
 		this->mShapeId = shapeId;
 		initWithShapePrototype();
@@ -217,11 +312,45 @@ public:
 		return true;
 	}
 
+	bool canRotate() const {
+		if (mCanRotate == false) {
+			return false;
+		}
+		// 相对于4*4形状的旋转中心
+		int xCenter = 2;
+		int yCenter = 2;
+		for (int i = 0; i < SHAPE_BLOCK_NUM; i++) {
+			for (int j = 0; j < SHAPE_BLOCK_NUM; j++) {
+				Block* currBlock = mBlocks[i][j];
+				if (currBlock != nullptr) {
+					// 相对于4*4形状的横纵坐标
+					int currBlockX = j;
+					int currBlockY = i;
+					// 旋转后的位置相对于4*4形状的横纵坐标
+					int xAfterRotate = xCenter + yCenter - currBlockY - 1;
+					int yAfterRotate = yCenter - xCenter + currBlockX;
+					// 旋转后的位置相对于背板网格的横纵坐标
+					int finalBlockX = mX + xAfterRotate;
+					int finalBlockY = mY + yAfterRotate;
+					if (finalBlockX < 0 || finalBlockX >= mXBlocks) {
+						return false;
+					}
+					if (finalBlockY < 0 || finalBlockY >= mYBlocks) {
+						return false;
+					}
+				}
+			}
+		}
+		return true;
+
+	}
+
 	void moveLeft() {
 		if (canGoLeft() == false) {
 			return;
 		}
 		erase();
+		mX--;
 		for (int i = 0; i < SHAPE_BLOCK_NUM; i++) {
 			for (int j = 0; j < SHAPE_BLOCK_NUM; j++) {
 				Block* currBlock = mBlocks[i][j];
@@ -237,6 +366,7 @@ public:
 			return;
 		}
 		erase();
+		mX++;
 		for (int i = 0; i < SHAPE_BLOCK_NUM; i++) {
 			for (int j = 0; j < SHAPE_BLOCK_NUM; j++) {
 				Block* currBlock = mBlocks[i][j];
@@ -252,12 +382,69 @@ public:
 			return;
 		}
 		erase();
+		mY++;
 		for (int i = 0; i < SHAPE_BLOCK_NUM; i++) {
 			for (int j = 0; j < SHAPE_BLOCK_NUM; j++) {
 				Block* currBlock = mBlocks[i][j];
 				if (currBlock != nullptr) {
 					currBlock->moveDown();
 				}
+			}
+		}
+	}
+
+	void rotate() {
+		if (canRotate() == false) {
+			return;
+		}
+		erase();
+		// 将待旋转的方块记录下来
+		int needRotateBlocks[SHAPE_BLOCK_NUM][SHAPE_BLOCK_NUM] = { 0 };
+		// 旋转后的4*4形状
+		Block* tempBlocks[SHAPE_BLOCK_NUM][SHAPE_BLOCK_NUM];
+		for (int i = 0; i < SHAPE_BLOCK_NUM; i++) {
+			for (int j = 0; j < SHAPE_BLOCK_NUM; j++) {
+				tempBlocks[i][j] = nullptr;
+				Block* currBlock = mBlocks[i][j];
+				if (currBlock != nullptr) {
+					needRotateBlocks[i][j] = 1;
+				}
+			}
+		}
+		
+		// 相对于4*4形状的旋转中心
+		int xCenter = 2;
+		int yCenter = 2;
+		for (int i = 0; i < SHAPE_BLOCK_NUM; i++) {
+			for (int j = 0; j < SHAPE_BLOCK_NUM; j++) {
+				Block* currBlock = mBlocks[i][j];
+				if (currBlock != nullptr && needRotateBlocks[i][j] == 1) {
+					// 相对于4*4形状的横纵坐标
+					int currBlockX = j;
+					int currBlockY = i;
+					// 旋转后的位置相对于4*4形状的横纵坐标
+					int xAfterRotate = xCenter + yCenter - currBlockY - 1;
+					int yAfterRotate = yCenter - xCenter + currBlockX;
+					// 旋转后的位置相对于背板网格的横纵坐标
+					int finalBlockX = mX + xAfterRotate;
+					int finalBlockY = mY + yAfterRotate;
+					if (finalBlockX < 0 || finalBlockX >= mXBlocks) {
+						continue;
+					}
+					if (finalBlockY < 0 || finalBlockY >= mYBlocks) {
+						continue;
+					}
+					currBlock->setXYPos(finalBlockX, finalBlockY);
+					currBlock->draw();
+
+					tempBlocks[yAfterRotate][xAfterRotate] = currBlock;
+				}
+			}
+		}
+
+		for (int i = 0; i < SHAPE_BLOCK_NUM; i++) {
+			for (int j = 0; j < SHAPE_BLOCK_NUM; j++) {
+				mBlocks[i][j] = tempBlocks[i][j];
 			}
 		}
 	}
@@ -287,12 +474,13 @@ public:
 
 private:
 	void initWithShapePrototype() {
+		mCanRotate = shapePrototype[mShapeId].canRotate;
 		for (int i = 0; i < SHAPE_BLOCK_NUM; i++) {
 			for (int j = 0; j < SHAPE_BLOCK_NUM; j++) {
-				if (shapePrototype[mShapeId][i][j] == 0) {
+				if (shapePrototype[mShapeId].shapeBlock[i][j] == 0) {
 					mBlocks[i][j] = nullptr;
 				} else {
-					mBlocks[i][j] = new Block(mBoardX, mBoardY, mXBlocks, mYBlocks, mBlockSize, 5 + j, 5 + i, mBkColor, GREEN);
+					mBlocks[i][j] = new Block(mBoardX, mBoardY, mXBlocks, mYBlocks, mBlockSize, mX + j, mY + i, mBkColor, shapePrototype[mShapeId].shapeColor);
 				}
 			}
 		}
@@ -300,6 +488,7 @@ private:
 
 
 };
+
 
 class Frame_7_Tetris : public Frame {
 private:
@@ -313,8 +502,8 @@ private:
 	// 每个格子的大小
 	int mBlockSize = 32;
 	// 横向和纵向的格子数
-	int mXBlocks = 10;
-	int mYBlocks = 20;
+	int mXBlocks = BOARD_SIZE_X;
+	int mYBlocks = BOARD_SIZE_Y;
 
 public:
 	Frame_7_Tetris(int frameWidth, int frameHeight, COLORREF frameBkColor, int globalIndex) :
@@ -322,7 +511,7 @@ public:
 		mBoardBkColor = frameBkColor;
 		mBoardOutlineColor = BLACK;
 
-		testShape = new Shape(mBoardX, mBoardY, mXBlocks, mYBlocks, mBlockSize, RED, frameBkColor, 0);
+		testShape = new Shape(mBoardX, mBoardY, mXBlocks, mYBlocks, mBlockSize, frameBkColor, 6);
 	}
 
 	virtual void init() override {
@@ -384,6 +573,8 @@ public:
 			testShape->moveRight();
 		} else if (vkcode == VK_DOWN) {
 			testShape->moveDown();
+		} else if (vkcode == VK_UP) {
+			testShape->rotate();
 		}
 
 		FlushBatchDraw();

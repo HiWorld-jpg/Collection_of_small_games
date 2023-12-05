@@ -111,7 +111,6 @@ public:
 	}
 
 	void drawButtonText() const {
-		clearButtonText();
 		outputColorText(BLACK);
 	}
 

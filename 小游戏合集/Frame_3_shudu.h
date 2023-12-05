@@ -586,6 +586,7 @@ public:
 				char tempStr[20] = { "自由模式" };
 				Button* currButton = getButtonByEventIndex(eventIndex);
 				if (currButton != nullptr) {
+					currButton->clearButtonText();
 					currButton->setText(tempStr);
 					currButton->drawButtonText();
 					drawBoard();
@@ -595,6 +596,7 @@ public:
 				char tempStr[20] = { "创题模式" };
 				Button* currButton = getButtonByEventIndex(eventIndex);
 				if (currButton != nullptr) {
+					currButton->clearButtonText();
 					currButton->setText(tempStr);
 					currButton->drawButtonText();
 					drawBoard();
@@ -604,6 +606,7 @@ public:
 				char tempStr[20] = { "解题模式" };
 				Button* currButton = getButtonByEventIndex(eventIndex);
 				if (currButton != nullptr) {
+					currButton->clearButtonText();
 					currButton->setText(tempStr);
 					currButton->drawButtonText();
 					drawBoard();
@@ -673,6 +676,7 @@ public:
 				char tempStr[10] = { "动画: 关" };
 				Button* currButton = getButtonByEventIndex(eventIndex);
 				if (currButton != nullptr) {
+					currButton->clearButtonText();
 					currButton->setText(tempStr);
 					currButton->drawButtonText();
 					drawBoard();
@@ -682,6 +686,7 @@ public:
 				char tempStr[10] = { "动画: 开" };
 				Button* currButton = getButtonByEventIndex(eventIndex);
 				if (currButton != nullptr) {
+					currButton->clearButtonText();
 					currButton->setText(tempStr);
 					currButton->drawButtonText();
 					drawBoard();
