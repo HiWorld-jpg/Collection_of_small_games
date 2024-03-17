@@ -4,9 +4,6 @@
 #define BOARD_SIZE_X 10
 #define BOARD_SIZE_Y 20
 
-// 形状是由4*4的小格子组成的
-#define SHAPE_BLOCK_NUM 4
-
 typedef struct ShapePrototype {
 	int shapeBlock[4][4];
 	COLORREF shapeColor;
@@ -236,25 +233,21 @@ public:
 	}
 };
 
-// 不new Blocks，负责管理以及delete Blocks
-class Board {
-private:
-	Block* mBlocks[BOARD_SIZE_Y][BOARD_SIZE_X];
-};
-
 // new Block
 class Shape {
 private:
-	Block* mBlocks[SHAPE_BLOCK_NUM][SHAPE_BLOCK_NUM];
+	Block*** mBlocks;
 	// 背板左上角的横纵坐标
 	int mBoardX;
 	int mBoardY;
-	// 当前4*4形状左上角的横纵坐标
-	int mX = 5;
-	int mY = 5;
 	// 背景里横向和纵向的格子数
 	int mXBlocks;
 	int mYBlocks;
+	// 当前形状左上角的横纵坐标
+	int mX;
+	int mY;
+	// 当前形状的大小，即横纵包含多少个格子
+	int mBlockNum;
 	// 格子的大小
 	int mBlockSize;
 	// 背景色
@@ -265,20 +258,23 @@ private:
 	bool mCanRotate;
 
 public:
-	Shape(int boardX, int boardY, int xBlocks, int yBlocks, int blockSize, COLORREF bkColor, int shapeId) {
+	Shape(int boardX, int boardY, int xBlocks, int yBlocks, int blockNum, int blockSize, int x, int y, COLORREF bkColor, int shapeId) {
 		this->mBoardX = boardX;
 		this->mBoardY = boardY;
 		this->mXBlocks = xBlocks;
 		this->mYBlocks = yBlocks;
+		this->mBlockNum = blockNum;
 		this->mBlockSize = blockSize;
+		this->mX = x;
+		this->mY = y;
 		this->mBkColor = bkColor;
 		this->mShapeId = shapeId;
 		initWithShapePrototype();
 	}
 
 	bool canGoLeft() const {
-		for (int i = 0; i < SHAPE_BLOCK_NUM; i++) {
-			for (int j = 0; j < SHAPE_BLOCK_NUM; j++) {
+		for (int i = 0; i < mBlockNum; i++) {
+			for (int j = 0; j < mBlockNum; j++) {
 				Block* currBlock = mBlocks[i][j];
 				if (currBlock != nullptr && currBlock->canGoLeft() == false) {
 					return false;
@@ -289,8 +285,8 @@ public:
 	}
 
 	bool canGoRight() const {
-		for (int i = 0; i < SHAPE_BLOCK_NUM; i++) {
-			for (int j = 0; j < SHAPE_BLOCK_NUM; j++) {
+		for (int i = 0; i < mBlockNum; i++) {
+			for (int j = 0; j < mBlockNum; j++) {
 				Block* currBlock = mBlocks[i][j];
 				if (currBlock != nullptr && currBlock->canGoRight() == false) {
 					return false;
@@ -301,8 +297,8 @@ public:
 	}
 
 	bool canGoDown() const {
-		for (int i = 0; i < SHAPE_BLOCK_NUM; i++) {
-			for (int j = 0; j < SHAPE_BLOCK_NUM; j++) {
+		for (int i = 0; i < mBlockNum; i++) {
+			for (int j = 0; j < mBlockNum; j++) {
 				Block* currBlock = mBlocks[i][j];
 				if (currBlock != nullptr && currBlock->canGoDown() == false) {
 					return false;
@@ -319,8 +315,8 @@ public:
 		// 相对于4*4形状的旋转中心
 		int xCenter = 2;
 		int yCenter = 2;
-		for (int i = 0; i < SHAPE_BLOCK_NUM; i++) {
-			for (int j = 0; j < SHAPE_BLOCK_NUM; j++) {
+		for (int i = 0; i < mBlockNum; i++) {
+			for (int j = 0; j < mBlockNum; j++) {
 				Block* currBlock = mBlocks[i][j];
 				if (currBlock != nullptr) {
 					// 相对于4*4形状的横纵坐标
@@ -351,8 +347,8 @@ public:
 		}
 		erase();
 		mX--;
-		for (int i = 0; i < SHAPE_BLOCK_NUM; i++) {
-			for (int j = 0; j < SHAPE_BLOCK_NUM; j++) {
+		for (int i = 0; i < mBlockNum; i++) {
+			for (int j = 0; j < mBlockNum; j++) {
 				Block* currBlock = mBlocks[i][j];
 				if (currBlock != nullptr) {
 					currBlock->moveLeft();
@@ -367,8 +363,8 @@ public:
 		}
 		erase();
 		mX++;
-		for (int i = 0; i < SHAPE_BLOCK_NUM; i++) {
-			for (int j = 0; j < SHAPE_BLOCK_NUM; j++) {
+		for (int i = 0; i < mBlockNum; i++) {
+			for (int j = 0; j < mBlockNum; j++) {
 				Block* currBlock = mBlocks[i][j];
 				if (currBlock != nullptr) {
 					currBlock->moveRight();
@@ -383,8 +379,8 @@ public:
 		}
 		erase();
 		mY++;
-		for (int i = 0; i < SHAPE_BLOCK_NUM; i++) {
-			for (int j = 0; j < SHAPE_BLOCK_NUM; j++) {
+		for (int i = 0; i < mBlockNum; i++) {
+			for (int j = 0; j < mBlockNum; j++) {
 				Block* currBlock = mBlocks[i][j];
 				if (currBlock != nullptr) {
 					currBlock->moveDown();
@@ -450,8 +446,8 @@ public:
 	}
 
 	void draw() const {
-		for (int i = 0; i < SHAPE_BLOCK_NUM; i++) {
-			for (int j = 0; j < SHAPE_BLOCK_NUM; j++) {
+		for (int i = 0; i < mBlockNum; i++) {
+			for (int j = 0; j < mBlockNum; j++) {
 				Block* currBlock = mBlocks[i][j];
 				if (currBlock != nullptr) {
 					currBlock->draw();
@@ -461,8 +457,8 @@ public:
 	}
 
 	void erase() const {
-		for (int i = 0; i < SHAPE_BLOCK_NUM; i++) {
-			for (int j = 0; j < SHAPE_BLOCK_NUM; j++) {
+		for (int i = 0; i < mBlockNum; i++) {
+			for (int j = 0; j < mBlockNum; j++) {
 				Block* currBlock = mBlocks[i][j];
 				if (currBlock != nullptr) {
 					currBlock->erase();
@@ -475,8 +471,8 @@ public:
 private:
 	void initWithShapePrototype() {
 		mCanRotate = shapePrototype[mShapeId].canRotate;
-		for (int i = 0; i < SHAPE_BLOCK_NUM; i++) {
-			for (int j = 0; j < SHAPE_BLOCK_NUM; j++) {
+		for (int i = 0; i < mBlockNum; i++) {
+			for (int j = 0; j < mBlockNum; j++) {
 				if (shapePrototype[mShapeId].shapeBlock[i][j] == 0) {
 					mBlocks[i][j] = nullptr;
 				} else {
@@ -486,9 +482,34 @@ private:
 		}
 	}
 
+	void initBlocks() {
+		mBlocks = (Block***)malloc(mBlockNum * sizeof(Block**));
+		for (int i = 0; i < mBlockNum; i++) {
+			mBlocks[i] = (Block**)malloc(mBlockNum * sizeof(Block*));
+		}
+	}
+
 
 };
 
+// 不new Blocks，负责管理以及delete Blocks
+class Board {
+private:
+	Block* mBlocks[BOARD_SIZE_Y][BOARD_SIZE_X];
+	Shape* mShape;
+
+public:
+	Board() {
+		mShape = nullptr;
+		for (int i = 0; i < BOARD_SIZE_Y; i++) {
+			for (int j = 0; j < BOARD_SIZE_X; j++) {
+				mBlocks[i][j] = nullptr;
+			}
+		}
+	}
+
+
+};
 
 class Frame_7_Tetris : public Frame {
 private:
@@ -511,7 +532,7 @@ public:
 		mBoardBkColor = frameBkColor;
 		mBoardOutlineColor = BLACK;
 
-		testShape = new Shape(mBoardX, mBoardY, mXBlocks, mYBlocks, mBlockSize, frameBkColor, 6);
+		testShape = new Shape(mBoardX, mBoardY, mXBlocks, mYBlocks, mBlockSize, 3, 0, frameBkColor, 6);
 	}
 
 	virtual void init() override {
